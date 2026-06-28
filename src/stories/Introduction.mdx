@@ -1,0 +1,55 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# Fintech Design System
+
+An open-source, **accessible** React 18 + TypeScript design system for building
+fintech applications — banking dashboards, brokerage apps, payment flows and KYC
+onboarding.
+
+- **Themeable** via design tokens emitted as CSS custom properties (light / dark).
+- **Accessible by construction** — ARIA roles, keyboard navigation, focus
+  management, and an `aria-live` toast region. Use the **Accessibility** tab in
+  each story to run axe checks.
+- **Zero runtime dependencies** beyond React. Charts are pure SVG; currency
+  formatting uses the native `Intl` API.
+
+## Components
+
+| Component | Purpose |
+| --- | --- |
+| `ThemeProvider` | Emits token CSS variables, light/dark switching. |
+| `Button` | Variants, sizes, loading state. |
+| `Field` | Labeled input with hint / error and full ARIA wiring. |
+| `MoneyAmount` | Currency-aware, locale-aware amount formatting. |
+| `StatusBadge` | Status pills with semantic tones. |
+| `AccountCard` | Account summary with balance + status. |
+| `TransactionList` | Accessible transaction feed. |
+| `DataTable` | Sortable, optionally virtualized table. |
+| `Sparkline` / `AreaChart` | Pure-SVG trend charts. |
+| `Modal` | Focus-trapped dialog with Escape + restore. |
+| `Toast` | Imperative toast API with live region. |
+| `StepperForm` | Multi-step KYC-style form. |
+
+## Theming
+
+Toggle the **Theme** control in the toolbar (top of the canvas) to switch every
+story between light and dark. Tokens live in `src/tokens/tokens.ts` and are
+turned into `--fds-*` CSS variables by the `ThemeProvider`.
+
+## Usage
+
+```tsx
+import { ThemeProvider, Button, MoneyAmount } from 'fintech-design-system';
+import 'fintech-design-system/styles.css';
+
+export function App() {
+  return (
+    <ThemeProvider defaultTheme="light">
+      <Button variant="primary">Send money</Button>
+      <MoneyAmount value={1234.56} currency="USD" colorize showSign />
+    </ThemeProvider>
+  );
+}
+```
