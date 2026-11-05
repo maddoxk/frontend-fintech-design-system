@@ -68,6 +68,75 @@ describe('Select', () => {
   });
 });
 
+describe('Select placeholder, options and groups', () => {
+  it('renders a disabled, initially selected placeholder', () => {
+    render(<Select label="C" placeholder="Pick" options={opts} />);
+    const ph = screen.getByRole('option', { name: 'Pick' }) as HTMLOptionElement;
+    expect(ph).toBeDisabled();
+    expect(ph.value).toBe('');
+    expect(ph.selected).toBe(true);
+    expect(screen.getByLabelText('C')).toHaveValue('');
+  });
+  it('placeholder is selected when controlled value is empty', () => {
+    render(<Select label="C" placeholder="Pick" value="" onChange={() => {}} options={opts} />);
+    expect((screen.getByRole('option', { name: 'Pick' }) as HTMLOptionElement).selected).toBe(true);
+  });
+  it('user cannot select the placeholder and it hides after a choice', async () => {
+    const onChange = vi.fn();
+    render(<Select label="C" placeholder="Pick" options={opts} onChange={onChange} />);
+    const sel = screen.getByLabelText('C');
+    const ph = screen.getByRole('option', { name: 'Pick', hidden: true });
+    expect(ph).not.toHaveAttribute('hidden');
+    await userEvent.selectOptions(sel, 'Pick').catch(() => {});
+    expect(sel).toHaveValue('');
+    await userEvent.selectOptions(sel, 'eur');
+    expect(sel).toHaveValue('eur');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(ph).toHaveAttribute('hidden');
+  });
+  it('required with placeholder is invalid until a real option is chosen', async () => {
+    render(<Select label="C" required placeholder="Pick" options={opts} />);
+    const sel = screen.getByLabelText(/C/) as HTMLSelectElement;
+    expect(sel.checkValidity()).toBe(false);
+    await userEvent.selectOptions(sel, 'usd');
+    expect(sel.checkValidity()).toBe(true);
+  });
+  it('placeholder works with option children', () => {
+    render(
+      <Select label="C" placeholder="Pick">
+        <option value="a">A</option>
+      </Select>,
+    );
+    expect(screen.getAllByRole('option')[0]).toHaveTextContent('Pick');
+  });
+  it('options shorthand marks disabled options and they cannot be chosen', async () => {
+    render(<Select label="C" options={opts} />);
+    expect(screen.getByRole('option', { name: 'Pound' })).toBeDisabled();
+    expect(screen.getByRole('option', { name: 'Euro' })).toBeEnabled();
+    const sel = screen.getByLabelText('C');
+    await userEvent.selectOptions(sel, 'gbp').catch(() => {});
+    expect(sel).not.toHaveValue('gbp');
+  });
+  it('renders optgroup children', async () => {
+    render(
+      <Select label="C">
+        <optgroup label="Cash">
+          <option value="chk">Checking</option>
+        </optgroup>
+        <optgroup label="Invest">
+          <option value="brk">Brokerage</option>
+        </optgroup>
+      </Select>,
+    );
+    expect(screen.getByRole('group', { name: 'Cash' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Invest' })).toContainElement(
+      screen.getByRole('option', { name: 'Brokerage' }),
+    );
+    await userEvent.selectOptions(screen.getByLabelText('C'), 'brk');
+    expect(screen.getByLabelText('C')).toHaveValue('brk');
+  });
+});
+
 const lum = (hex: string) => {
   const n = parseInt(hex.slice(1), 16);
   const [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255].map((c) => {
