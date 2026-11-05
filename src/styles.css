@@ -1,6 +1,16 @@
 /* Fintech Design System — component styles.
    All colors/spacing reference CSS custom properties emitted by ThemeProvider. */
 
+/* Motion tokens (override on :root or any ancestor) */
+:root {
+  --fds-motion-duration-fast: 120ms;
+  --fds-motion-duration-base: 160ms;
+  --fds-motion-duration-slow: 240ms;
+  --fds-motion-duration-spinner: 600ms;
+  --fds-motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --fds-motion-ease-emphasized: cubic-bezier(0.3, 0, 0, 1.2);
+}
+
 .fds-btn {
   display: inline-flex;
   align-items: center;
@@ -13,7 +23,7 @@
   border-radius: var(--fds-radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease, opacity 120ms ease;
+  transition: background var(--fds-motion-duration-fast) var(--fds-motion-ease-standard), border-color var(--fds-motion-duration-fast) var(--fds-motion-ease-standard), opacity var(--fds-motion-duration-fast) var(--fds-motion-ease-standard);
   white-space: nowrap;
 }
 .fds-btn:focus-visible {
@@ -49,7 +59,7 @@
   border-right-color: transparent;
   border-radius: 50%;
   display: inline-block;
-  animation: fds-spin 0.6s linear infinite;
+  animation: fds-spin var(--fds-motion-duration-spinner) linear infinite;
 }
 @keyframes fds-spin { to { transform: rotate(360deg); } }
 
@@ -69,7 +79,7 @@
   border: 1px solid var(--fds-color-border-strong);
   border-radius: var(--fds-radius-md);
   padding: 9px 12px;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color var(--fds-motion-duration-fast) var(--fds-motion-ease-standard), box-shadow var(--fds-motion-duration-fast) var(--fds-motion-ease-standard);
   width: 100%;
   box-sizing: border-box;
 }
@@ -176,7 +186,7 @@
   border-radius: var(--fds-radius-md);
   padding: var(--fds-space-md) var(--fds-space-lg);
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  animation: fds-toast-in 160ms ease;
+  animation: fds-toast-in var(--fds-motion-duration-base) var(--fds-motion-ease-emphasized);
 }
 @keyframes fds-toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .fds-toast--success { border-left-color: var(--fds-color-positive); }
@@ -192,7 +202,7 @@
 .fds-modal__overlay {
   position: fixed; inset: 0; background: rgba(2,6,23,0.55);
   display: grid; place-items: center; padding: var(--fds-space-lg); z-index: 1100;
-  animation: fds-fade 140ms ease;
+  animation: fds-fade var(--fds-motion-duration-base) var(--fds-motion-ease-standard);
 }
 @keyframes fds-fade { from { opacity: 0; } to { opacity: 1; } }
 .fds-modal {
@@ -229,3 +239,13 @@
 .fds-stepper__actions { display: flex; justify-content: space-between; gap: var(--fds-space-sm); }
 
 .fds-vstack { display: flex; flex-direction: column; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fds-motion-duration-fast: 0ms;
+    --fds-motion-duration-base: 0ms;
+    --fds-motion-duration-slow: 0ms;
+    --fds-motion-duration-spinner: 1800ms;
+  }
+  .fds-toast, .fds-modal__overlay { animation: none; }
+}
