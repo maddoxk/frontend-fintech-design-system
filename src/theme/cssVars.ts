@@ -36,20 +36,32 @@ export function staticVars(): Record<string, string> {
   return vars;
 }
 
-/** Resolve an accent (preset name or custom object) to color roles. Unknown names fall back to blue. */
+const HEX_RE = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+
+/** True for a strict hex colour: #rgb, #rrggbb or #rrggbbaa. */
+export function isHexColor(v: unknown): v is string {
+  return typeof v === 'string' && HEX_RE.test(v);
+}
+
+/** True for a known preset name or a custom accent whose every colour is a strict hex. */
+export function isValidAccent(accent: unknown): accent is Accent {
+  if (typeof accent === 'string') return Object.prototype.hasOwnProperty.call(accents, accent);
+  if (!accent || typeof accent !== 'object') return false;
+  const a = accent as Record<string, unknown>;
+  if (!isHexColor(a.base)) return false;
+  return (['hover', 'onAccent', 'focusRing'] as const).every((k) => a[k] === undefined || isHexColor(a[k]));
+}
+
+/** Resolve an accent (preset name or custom object) to color roles. Invalid input falls back to blue. */
 export function resolveAccent(accent: Accent | undefined, name: ThemeName): AccentColors {
-  if (typeof accent === 'string') {
-    return (Object.prototype.hasOwnProperty.call(accents, accent) ? accents[accent] : accents.blue)[name];
-  }
-  if (accent && typeof accent === 'object' && typeof accent.base === 'string' && accent.base) {
-    return {
-      brand: accent.base,
-      brandHover: accent.hover ?? accent.base,
-      brandText: accent.onAccent ?? '#ffffff',
-      focusRing: accent.focusRing ?? accent.base,
-    };
-  }
-  return accents.blue[name];
+  if (!isValidAccent(accent)) return accents.blue[name];
+  if (typeof accent === 'string') return accents[accent][name];
+  return {
+    brand: accent.base,
+    brandHover: accent.hover ?? accent.base,
+    brandText: accent.onAccent ?? '#ffffff',
+    focusRing: accent.focusRing ?? accent.base,
+  };
 }
 
 export function themeVars(name: ThemeName, accent?: Accent): Record<string, string> {

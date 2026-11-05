@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,6 +30,25 @@ describe('accent presets', () => {
       expect(contrast(c.brand, c.brandText)).toBeGreaterThanOrEqual(4.5);
     },
   );
+
+  it.each(names.flatMap((n) => modes.map((m) => [n, m] as const)))(
+    '%s/%s brand has >= 3:1 contrast against the theme background',
+    (n, m) => {
+      expect(contrast(accents[n][m].brand, themes[m].bg)).toBeGreaterThanOrEqual(3);
+    },
+  );
+
+  it('falls back to blue for invalid custom accents', () => {
+    const bad = ['x', '', 'red', '#12', '#ggg', '#1234567', 'red;background:url(x)', '#fff;x', 'url(http://e)'];
+    bad.forEach((b) => {
+      expect(resolveAccent({ base: b }, 'light')).toEqual(accents.blue.light);
+      expect(resolveAccent({ base: '#112233', hover: b }, 'dark')).toEqual(accents.blue.dark);
+      expect(resolveAccent({ base: '#112233', onAccent: b }, 'dark')).toEqual(accents.blue.dark);
+      expect(resolveAccent({ base: '#112233', focusRing: b }, 'dark')).toEqual(accents.blue.dark);
+    });
+    expect(resolveAccent({ base: '#abc' }, 'light').brand).toBe('#abc');
+    expect(resolveAccent({ base: '#aabbccdd' }, 'light').brand).toBe('#aabbccdd');
+  });
 
   it('default output is identical to the theme vars', () => {
     modes.forEach((m) => {
@@ -92,5 +112,54 @@ describe('ThemeProvider accent', () => {
       </ThemeProvider>,
     );
     expect(screen.getByTestId('accent')).toHaveTextContent('rose');
+  });
+
+  it('ignores invalid accent props and injection-like values', () => {
+    const { container } = render(
+      <ThemeProvider accent={{ base: 'red; background:url(x)' }}>
+        <Readout />
+      </ThemeProvider>,
+    );
+    const el = container.querySelector('[data-fds-theme]') as HTMLElement;
+    expect(el.style.getPropertyValue('--fds-color-brand')).toBe(accents.blue.light.brand);
+  });
+
+  it.each([
+    '{"base":"x"}',
+    '{"base":"#fff;background:url(x)"}',
+    '{"base":"url(x)"}',
+    '{"base":"#112233","hover":"x;y"}',
+    '{bad json',
+    'null',
+    'nope',
+  ])('falls back to blue for bad stored accent %s', (stored) => {
+    window.localStorage.setItem('k:accent', stored);
+    const { container } = render(
+      <ThemeProvider storageKey="k">
+        <Readout />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId('accent')).toHaveTextContent('blue');
+    const el = container.querySelector('[data-fds-theme]') as HTMLElement;
+    expect(el.style.getPropertyValue('--fds-color-brand')).toBe(accents.blue.light.brand);
+  });
+
+  it('keeps a setAccent choice across parent re-renders with an equivalent inline accent', async () => {
+    function Parent() {
+      const [n, setN] = useState(0);
+      return (
+        <>
+          <button onClick={() => setN(n + 1)}>rerender</button>
+          <ThemeProvider storageKey="k" accent={{ base: '#112233' }}>
+            <Readout />
+          </ThemeProvider>
+        </>
+      );
+    }
+    render(<Parent />);
+    expect(screen.getByTestId('accent')).toHaveTextContent('#112233');
+    await userEvent.click(screen.getByText('violet'));
+    await userEvent.click(screen.getByText('rerender'));
+    expect(screen.getByTestId('accent')).toHaveTextContent('violet');
   });
 });

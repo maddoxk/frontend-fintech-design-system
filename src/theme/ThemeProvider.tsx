@@ -5,12 +5,13 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
   type CSSProperties,
 } from 'react';
-import { type ThemeName, type Accent, accents } from '../tokens/tokens';
-import { themeVars } from './cssVars';
+import { type ThemeName, type Accent } from '../tokens/tokens';
+import { themeVars, isValidAccent } from './cssVars';
 
 /** Theme selection: an explicit theme, or "system" to follow the OS appearance. */
 export type ThemeMode = ThemeName | 'system';
@@ -51,9 +52,9 @@ function readStoredAccent(key: string | undefined): Accent | undefined {
   try {
     const v = window.localStorage.getItem(`${key}:accent`);
     if (!v) return undefined;
-    if (Object.prototype.hasOwnProperty.call(accents, v)) return v as Accent;
-    const parsed = JSON.parse(v);
-    return parsed && typeof parsed.base === 'string' ? (parsed as Accent) : undefined;
+    if (isValidAccent(v)) return v;
+    const parsed: unknown = JSON.parse(v);
+    return isValidAccent(parsed) ? parsed : undefined;
   } catch {
     return undefined;
   }
@@ -93,9 +94,15 @@ export function ThemeProvider({
     setMode(readStored(storageKey) ?? defaultTheme);
   }, [defaultTheme, storageKey]);
 
+  // Key on the accent's value, not its identity, so an inline object prop doesn't reset setAccent().
+  const accentKey = typeof accentProp === 'string' ? accentProp : JSON.stringify(accentProp);
+  const accentPropRef = useRef(accentProp);
+  accentPropRef.current = accentProp;
+
   useIsoLayoutEffect(() => {
-    setAccentState(readStoredAccent(storageKey) ?? accentProp);
-  }, [accentProp, storageKey]);
+    const fromProp = isValidAccent(accentPropRef.current) ? accentPropRef.current : 'blue';
+    setAccentState(readStoredAccent(storageKey) ?? fromProp);
+  }, [accentKey, storageKey]);
 
   useIsoLayoutEffect(() => {
     if (mode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {

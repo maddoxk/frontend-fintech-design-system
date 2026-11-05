@@ -161,9 +161,16 @@ export interface CustomAccent {
 
 export type Accent = AccentName | CustomAccent;
 
-const accentPair = (brand: string, hover: string, ringDark: string): Record<ThemeName, AccentColors> => ({
-  light: { brand, brandHover: hover, brandText: '#ffffff', focusRing: brand },
-  dark: { brand, brandHover: hover, brandText: '#ffffff', focusRing: ringDark },
+/**
+ * Build light/dark accent roles. Dark values are chosen so the brand colour is >= 3:1 against the dark
+ * background while white on-accent text stays >= 4.5:1 against it.
+ */
+const accentPair = (
+  light: { brand: string; hover: string },
+  dark: { brand: string; hover: string; ring: string },
+): Record<ThemeName, AccentColors> => ({
+  light: { brand: light.brand, brandHover: light.hover, brandText: '#ffffff', focusRing: light.brand },
+  dark: { brand: dark.brand, brandHover: dark.hover, brandText: '#ffffff', focusRing: dark.ring },
 });
 
 /** Accent presets. `blue` mirrors the default theme values exactly. */
@@ -182,9 +189,24 @@ export const accents: Record<AccentName, Record<ThemeName, AccentColors>> = {
       focusRing: darkColors.focusRing,
     },
   },
-  indigo: accentPair('#4f46e5', '#4338ca', '#818cf8'),
-  emerald: accentPair('#047857', '#065f46', '#34d399'),
-  violet: accentPair('#7c3aed', '#6d28d9', '#a78bfa'),
-  rose: accentPair('#be123c', '#9f1239', '#fb7185'),
-  graphite: accentPair('#374151', '#1f2937', '#9ca3af'),
+  indigo: accentPair(
+    { brand: '#4f46e5', hover: '#4338ca' },
+    { brand: '#5558e8', hover: '#4f46e5', ring: '#818cf8' },
+  ),
+  emerald: accentPair(
+    { brand: '#047857', hover: '#065f46' },
+    { brand: '#047857', hover: '#065f46', ring: '#34d399' },
+  ),
+  violet: accentPair(
+    { brand: '#7c3aed', hover: '#6d28d9' },
+    { brand: '#7c3aed', hover: '#6d28d9', ring: '#a78bfa' },
+  ),
+  rose: accentPair(
+    { brand: '#be123c', hover: '#9f1239' },
+    { brand: '#be123c', hover: '#9f1239', ring: '#fb7185' },
+  ),
+  graphite: accentPair(
+    { brand: '#374151', hover: '#1f2937' },
+    { brand: '#6b7280', hover: '#5b6472', ring: '#9ca3af' },
+  ),
 };
