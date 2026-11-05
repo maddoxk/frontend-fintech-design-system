@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeProvider, useTheme, type ThemeMode } from '../theme/ThemeProvider';
-import { palette, spacing, radii } from '../tokens/tokens';
+import { Button } from '../components/Button';
+import { Field } from '../components/Field';
+import { StatusBadge } from '../components/StatusBadge';
+import { accents, type AccentName, palette, spacing, radii } from '../tokens/tokens';
 
 const meta: Meta = { title: 'Foundations/Design Tokens', tags: ['autodocs'] };
 export default meta;
@@ -73,6 +76,34 @@ export const ThemeModes: Story = {
   render: () => (
     <ThemeProvider defaultTheme="system">
       <ModeSwitcher />
+    </ThemeProvider>
+  ),
+};
+
+function AccentDemo() {
+  const { accent, setAccent } = useTheme();
+  return (
+    <div style={{ display: 'grid', gap: 12, padding: 16 }}>
+      <div role="group" aria-label="Accent" style={{ display: 'flex', gap: 8 }}>
+        {(Object.keys(accents) as AccentName[]).map((a) => (
+          <button key={a} aria-pressed={accent === a} onClick={() => setAccent(a)}>
+            {a}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Button>Primary</Button>
+        <StatusBadge tone="info">Info</StatusBadge>
+      </div>
+      <Field label="Focus me to see the ring" />
+    </div>
+  );
+}
+
+export const AccentPresets: Story = {
+  render: () => (
+    <ThemeProvider defaultTheme="light" accent="indigo">
+      <AccentDemo />
     </ThemeProvider>
   ),
 };
