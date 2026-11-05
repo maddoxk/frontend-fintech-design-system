@@ -64,7 +64,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export interface ThemeProviderProps {
   children: ReactNode;
-  /** Initial mode: "light", "dark" or "system". Defaults to "light". */
+  /** Initial mode: "light", "dark" or "system". Defaults to "dark" (Blueprint-style analytical surfaces). */
   defaultTheme?: ThemeMode;
   /** localStorage key used to persist the chosen mode. Omit for no persistence. */
   storageKey?: string;
@@ -80,7 +80,8 @@ export interface ThemeProviderProps {
  */
 export function ThemeProvider({
   children,
-  defaultTheme = 'light',
+  // Default is dark: the Palantir/Blueprint direction leads with dark analytical surfaces.
+  defaultTheme = 'dark',
   storageKey,
   accent: accentProp = 'blue',
   className,
