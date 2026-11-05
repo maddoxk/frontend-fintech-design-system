@@ -21,6 +21,9 @@ export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button
 export { Field } from './components/Field';
 export type { FieldProps } from './components/Field';
 
+export { Select } from './components/Select';
+export type { SelectProps, SelectOption } from './components/Select';
+
 export { MoneyAmount } from './components/MoneyAmount';
 export type { MoneyAmountProps } from './components/MoneyAmount';
 

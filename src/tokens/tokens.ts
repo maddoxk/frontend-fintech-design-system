@@ -44,6 +44,9 @@ export const palette = {
   bpLightPanel: '#EBF1F5',
   bpLightBorder: '#D8E1E8',
   bpLightBorderStrong: '#CED9E0',
+  /** Form-control boundary: >= 3:1 on page, section and widget surfaces (WCAG 1.4.11). */
+  bpControlBorder: '#7B8D9B',
+  bpLightControlBorder: '#738694',
   bpText: '#182026',
   bpTextDark: '#F5F8FA',
   bpTextMutedDark: '#A7B6C2',
@@ -119,6 +122,8 @@ export interface SemanticColors {
   bgSubtleHover: string;
   border: string;
   borderStrong: string;
+  /** Boundary of form controls; >= 3:1 against page, section and widget surfaces. */
+  borderControl: string;
   text: string;
   textMuted: string;
   textInverse: string;
@@ -149,6 +154,7 @@ export const lightColors: SemanticColors = {
   bgSubtleHover: palette.bpLightPanel,
   border: palette.bpLightBorder,
   borderStrong: palette.bpLightBorderStrong,
+  borderControl: palette.bpLightControlBorder,
   text: palette.bpText,
   textMuted: palette.bpTextMuted,
   textInverse: palette.white,
@@ -185,6 +191,7 @@ export const darkColors: SemanticColors = {
   bgSubtleHover: palette.bpWidgetHover,
   border: palette.bpBorder,
   borderStrong: palette.bpBorderStrong,
+  borderControl: palette.bpControlBorder,
   text: palette.bpTextDark,
   // Spec secondary #5C7080 is < 4.5:1 on the dark page; use the lighter Blueprint gray for text.
   textMuted: palette.bpTextMutedDark,
