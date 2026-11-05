@@ -9,7 +9,16 @@
     "type": "git",
     "url": "https://github.com/maddoxk/frontend-fintech-design-system.git"
   },
-  "keywords": ["react", "typescript", "design-system", "fintech", "components", "accessible", "a11y", "storybook"],
+  "keywords": [
+    "react",
+    "typescript",
+    "design-system",
+    "fintech",
+    "components",
+    "accessible",
+    "a11y",
+    "storybook"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,8 +30,12 @@
     },
     "./styles.css": "./dist/style.css"
   },
-  "files": ["dist"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json --noEmit && BUILD_LIB=1 vite build",
@@ -54,6 +67,7 @@
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "ajv": "^8.20.0",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-storybook": "^0.8.0",
