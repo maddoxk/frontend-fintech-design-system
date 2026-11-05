@@ -92,7 +92,7 @@
   font-size: 12px;
   color: var(--fds-color-text);
   background: var(--fds-color-bg-section);
-  border: 1px solid var(--fds-color-border-strong);
+  border: 1px solid var(--fds-color-border-control);
   border-radius: var(--fds-radius-control);
   height: var(--fds-control-height);
   padding: 0 10px;
@@ -113,6 +113,23 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--fds-color-negative) 16%, transparent);
 }
 .fds-input:disabled { opacity: 0.55; cursor: not-allowed; background: var(--fds-color-bg); }
+/* Select: native <select> sharing .fds-input tokens; chevron is CSS-only and never the sole state cue. */
+.fds-select-wrap { position: relative; display: block; }
+.fds-select { appearance: none; -webkit-appearance: none; padding-right: 28px; cursor: pointer; text-overflow: ellipsis; }
+.fds-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid var(--fds-color-text);
+  border-bottom: 1.5px solid var(--fds-color-text);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.fds-select-wrap--disabled::after { opacity: 0.55; }
+.fds-select:disabled { cursor: not-allowed; }
 .fds-field__hint { font-size: var(--fds-font-size-xs); color: var(--fds-color-text-muted); }
 .fds-field__error { font-size: var(--fds-font-size-xs); font-weight: var(--fds-font-weight-semibold); color: var(--fds-color-negative); }
 
