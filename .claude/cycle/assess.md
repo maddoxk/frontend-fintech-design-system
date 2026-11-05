@@ -1,5 +1,6 @@
 # Assessor (Sonnet)
 
+Read .claude/cycle/design-direction.md first (owner-provided design direction).
 Goal: a very modern, easy-to-use, customizable, distinctive fintech design system (inspiration: Apple, Google, Microsoft).
 Look at src/components, src/tokens, src/theme, stories, README for gaps in features, usability (API consistency, defaults, keyboard/screen-reader support), design (spacing, type scale, motion, dark mode, depth) and customizability.
 
