@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -10,18 +11,47 @@ import {
 import { type ThemeName } from '../tokens/tokens';
 import { themeVars } from './cssVars';
 
+/** Theme selection: an explicit theme, or "system" to follow the OS appearance. */
+export type ThemeMode = ThemeName | 'system';
+
 interface ThemeContextValue {
+  /** Resolved theme (never "system"). */
   theme: ThemeName;
-  setTheme: (t: ThemeName) => void;
+  /** The selected mode, which may be "system". */
+  mode: ThemeMode;
+  setTheme: (t: ThemeMode) => void;
   toggleTheme: () => void;
+}
+
+const DARK_QUERY = '(prefers-color-scheme: dark)';
+
+function systemTheme(): ThemeName {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light';
+  return window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
+}
+
+function isMode(v: unknown): v is ThemeMode {
+  return v === 'light' || v === 'dark' || v === 'system';
+}
+
+function readStored(key: string | undefined): ThemeMode | undefined {
+  if (!key) return undefined;
+  try {
+    const v = window.localStorage.getItem(key);
+    return isMode(v) ? v : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export interface ThemeProviderProps {
   children: ReactNode;
-  /** Controlled or initial theme. Defaults to "light". */
-  defaultTheme?: ThemeName;
+  /** Initial mode: "light", "dark" or "system". Defaults to "light". */
+  defaultTheme?: ThemeMode;
+  /** localStorage key used to persist the chosen mode. Omit for no persistence. */
+  storageKey?: string;
   /** When true, applies vars to the wrapping div as inline CSS custom properties. */
   className?: string;
 }
@@ -33,21 +63,51 @@ export interface ThemeProviderProps {
 export function ThemeProvider({
   children,
   defaultTheme = 'light',
+  storageKey,
   className,
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<ThemeName>(defaultTheme);
+  const [mode, setMode] = useState<ThemeMode>(() => readStored(storageKey) ?? defaultTheme);
+  const [system, setSystem] = useState<ThemeName>(systemTheme);
 
   useEffect(() => {
-    setTheme(defaultTheme);
-  }, [defaultTheme]);
+    setMode(readStored(storageKey) ?? defaultTheme);
+  }, [defaultTheme, storageKey]);
+
+  useEffect(() => {
+    if (mode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return undefined;
+    }
+    const mql = window.matchMedia(DARK_QUERY);
+    const onChange = (e: MediaQueryListEvent) => setSystem(e.matches ? 'dark' : 'light');
+    setSystem(mql.matches ? 'dark' : 'light');
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [mode]);
+
+  const theme: ThemeName = mode === 'system' ? system : mode;
+
+  const setTheme = useCallback(
+    (m: ThemeMode) => {
+      setMode(m);
+      if (storageKey) {
+        try {
+          window.localStorage.setItem(storageKey, m);
+        } catch {
+          /* storage unavailable */
+        }
+      }
+    },
+    [storageKey],
+  );
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
+      mode,
       setTheme,
-      toggleTheme: () => setTheme((t) => (t === 'light' ? 'dark' : 'light')),
+      toggleTheme: () => setTheme(theme === 'light' ? 'dark' : 'light'),
     }),
-    [theme],
+    [theme, mode, setTheme],
   );
 
   const style = useMemo(
@@ -63,7 +123,7 @@ export function ThemeProvider({
 
   return (
     <ThemeContext.Provider value={value}>
-      <div data-fds-theme={theme} className={className} style={style}>
+      <div data-fds-theme={theme} data-theme={theme} className={className} style={style}>
         {children}
       </div>
     </ThemeContext.Provider>

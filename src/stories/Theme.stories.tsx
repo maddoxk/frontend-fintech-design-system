@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { ThemeProvider, useTheme, type ThemeMode } from '../theme/ThemeProvider';
 import { palette, spacing, radii } from '../tokens/tokens';
 
 const meta: Meta = { title: 'Foundations/Design Tokens', tags: ['autodocs'] };
@@ -47,5 +48,31 @@ export const SpacingAndRadii: Story = {
         </div>
       </div>
     </div>
+  ),
+};
+
+function ModeSwitcher() {
+  const { mode, theme, setTheme } = useTheme();
+  return (
+    <div style={{ display: 'grid', gap: 8 }}>
+      <div role="group" aria-label="Theme mode" style={{ display: 'flex', gap: 8 }}>
+        {(['light', 'dark', 'system'] as ThemeMode[]).map((m) => (
+          <button key={m} aria-pressed={mode === m} onClick={() => setTheme(m)}>
+            {m}
+          </button>
+        ))}
+      </div>
+      <span>
+        Mode: {mode}, resolved: {theme}
+      </span>
+    </div>
+  );
+}
+
+export const ThemeModes: Story = {
+  render: () => (
+    <ThemeProvider defaultTheme="system">
+      <ModeSwitcher />
+    </ThemeProvider>
   ),
 };

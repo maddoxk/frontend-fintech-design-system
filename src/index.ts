@@ -3,7 +3,7 @@ import './styles.css';
 
 // Theme
 export { ThemeProvider, useTheme } from './theme/ThemeProvider';
-export type { ThemeProviderProps } from './theme/ThemeProvider';
+export type { ThemeProviderProps, ThemeMode } from './theme/ThemeProvider';
 export { themeVars, colorVars, staticVars } from './theme/cssVars';
 
 // Tokens
