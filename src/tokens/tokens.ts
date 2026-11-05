@@ -159,7 +159,8 @@ export const lightColors: SemanticColors = {
   negativeBg: '#FCE8E8',
   warning: '#935610',
   warningBg: '#FBEBDC',
-  info: palette.bpBlue,
+  // Light info text uses the darker Blueprint blue so it is >= 4.5:1 on its tint (#137CBD is 4.2:1).
+  info: palette.bpBlueHover,
   infoBg: '#DDEEF8',
   focusRing: palette.bpBlue,
 };
