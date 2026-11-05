@@ -44,7 +44,7 @@ consistent interfaces fast.
 
 | Component | Highlights |
 | --- | --- |
-| `ThemeProvider` / `useTheme` | Emits token CSS variables; light/dark switching. |
+| `ThemeProvider` / `useTheme` | Emits token CSS variables; light/dark switching (dark by default). |
 | `Button` | `primary` / `secondary` / `ghost` / `danger`, 3 sizes, loading state (`aria-busy`). |
 | `Field` | Labeled input with hint/error, auto-wired `htmlFor`, `aria-describedby`, `aria-invalid`. |
 | `MoneyAmount` | `Intl`-based currency formatting; optional colorize + explicit sign. |
@@ -56,6 +56,39 @@ consistent interfaces fast.
 | `Modal` | `role="dialog"` `aria-modal`, focus trap, Escape to close, focus restoration. |
 | `ToastProvider` / `useToast` | Imperative toast API rendered into a polite live region. |
 | `StepperForm` | Multi-step KYC-style form with progress rail + per-step validation. |
+| `Page` / `Section` / `Widget` | Layout hierarchy: page surface + title, section panel, bordered widget; responsive grid. |
+
+## The Palantir / Blueprint look
+
+Dark analytical surfaces by default with an equivalent light theme: compact controls (32px, 3px radius),
+1px borders before shadows, a 4/8/12/16/20/24 spacing scale, monospace numbers and fixed-meaning intent
+colours (primary, success, warning, danger). State is never conveyed by colour alone. Contrast is 4.5:1 for
+text and 3:1 for UI in both themes. Switch accent presets with `ThemeProvider accent` (see below).
+
+### Page > Section > Widget
+
+```tsx
+<Page title="Portfolio overview" as="main">          {/* h1, page surface, responsive grid */}
+  <Section title="Accounts" columns={2}>             {/* h2, <section aria-labelledby>, 6px radius, 20px padding */}
+    <Widget title="Checking" actions={<Button>Details</Button>}>  {/* h3, 4px radius, 16px padding */}
+      <AccountCard name="Checking" balance={8421.55} />
+    </Widget>
+  </Section>
+</Page>
+```
+
+Each accepts `className`, `children` and native props, a title heading level (`headingLevel`) and an actions
+slot. `Page`/`Section` take `columns`; grids collapse to a single column below 640px with no horizontal overflow.
+
+## Default changes (Palantir / Blueprint restyle)
+
+The restyle changes some visible defaults. Opt out or adapt as follows:
+
+- **Default theme is now dark.** `ThemeProvider` defaults to dark; pass `defaultTheme="light"` to restore light.
+- **`DataTable` default `rowHeight` 44 -> 32.** Pass `rowHeight` to override.
+- **`Sparkline` `area` default `true` -> `false`, `strokeWidth` 2 -> 1.5.** Use `AreaChart` or the `area` prop for a filled chart.
+- **`AccountCard` / `.fds-card` is now the flat widget primitive** (1px border, 4px radius, 16px padding, no gradient).
+- **`Button` gained `success`, `warning` and `default` variants** (additive).
 
 ## Quick start
 

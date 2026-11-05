@@ -47,3 +47,12 @@ export type { ToastOptions, ToastTone } from './components/Toast';
 
 export { StepperForm } from './components/StepperForm';
 export type { StepperFormProps, Step } from './components/StepperForm';
+
+export { Page } from './components/Page';
+export type { PageProps } from './components/Page';
+
+export { Section } from './components/Section';
+export type { SectionProps } from './components/Section';
+
+export { Widget } from './components/Widget';
+export type { WidgetProps, HeadingLevel } from './components/Widget';

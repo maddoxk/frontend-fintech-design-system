@@ -15,6 +15,31 @@ onboarding.
 - **Zero runtime dependencies** beyond React. Charts are pure SVG; currency
   formatting uses the native `Intl` API.
 
+## The Palantir / Blueprint look
+
+Dark analytical surfaces by default with an equivalent light theme, compact 32px controls, 1px borders
+before shadows and monospace numbers. Intent colours (primary, success, warning, danger) have fixed meaning,
+and state is never shown by colour alone. Pick an accent preset with `<ThemeProvider accent="emerald">`
+(`blue`, `indigo`, `emerald`, `violet`, `rose`, `graphite`) or pass a custom accent object.
+
+## Page > Section > Widget
+
+Compose screens from three layout primitives: `Page` (page surface, 32/700 title, responsive grid),
+`Section` (section surface, 6px radius, 20px padding, title + actions, a labelled `<section>`) and
+`Widget` (bordered panel, 4px radius, 16px padding, title + actions). Headings default to h1 / h2 / h3
+and can be changed with `headingLevel`. Grids collapse to one column on small screens. See
+**Components / Layout** for a full dashboard.
+
+## Default changes (Palantir / Blueprint restyle)
+
+The restyle changes some visible defaults. Opt out or adapt as follows:
+
+- **Default theme is now dark.** `ThemeProvider` defaults to dark; pass `defaultTheme="light"` to restore light.
+- **`DataTable` default `rowHeight` 44 -> 32.** Pass `rowHeight` to override.
+- **`Sparkline` `area` default `true` -> `false`, `strokeWidth` 2 -> 1.5.** Use `AreaChart` or the `area` prop for a filled chart.
+- **`AccountCard` / `.fds-card` is now the flat widget primitive** (1px border, 4px radius, 16px padding, no gradient).
+- **`Button` gained `success`, `warning` and `default` variants** (additive).
+
 ## Components
 
 | Component | Purpose |
@@ -31,6 +56,7 @@ onboarding.
 | `Modal` | Focus-trapped dialog with Escape + restore. |
 | `Toast` | Imperative toast API with live region. |
 | `StepperForm` | Multi-step KYC-style form. |
+| `Page` / `Section` / `Widget` | Page > Section > Widget layout hierarchy. |
 
 ## Theming
 
