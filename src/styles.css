@@ -50,16 +50,22 @@
 .fds-btn--default { background: var(--fds-color-bg-elevated); color: var(--fds-color-text); border-color: var(--fds-color-border-strong); }
 .fds-btn--secondary:hover:not([disabled]),
 .fds-btn--default:hover:not([disabled]) { background: var(--fds-color-bg-subtle-hover); }
+.fds-btn--secondary:active:not([disabled]),
+.fds-btn--default:active:not([disabled]) { background: var(--fds-color-bg-subtle-hover); border-color: var(--fds-color-text-muted); }
 /* Filled intents keep a visible 1px border (focus-ring colour) so the control meets 3:1 on dark surfaces,
    and draw their label in the on-accent / inverse text colour. */
 .fds-btn--primary { background: var(--fds-color-brand); color: var(--fds-color-brand-text); border-color: var(--fds-color-focus-ring); }
 .fds-btn--primary:hover:not([disabled]) { background: var(--fds-color-brand-hover); }
+.fds-btn--primary:active:not([disabled]) { background: color-mix(in srgb, var(--fds-color-brand-hover) 85%, black); }
 .fds-btn--success { background: var(--fds-color-positive); color: var(--fds-color-text-inverse); border-color: var(--fds-color-positive); }
 .fds-btn--warning { background: var(--fds-color-warning); color: var(--fds-color-text-inverse); border-color: var(--fds-color-warning); }
 .fds-btn--danger { background: var(--fds-color-negative); color: var(--fds-color-text-inverse); border-color: var(--fds-color-negative); }
-.fds-btn--success:hover:not([disabled]),
-.fds-btn--warning:hover:not([disabled]),
-.fds-btn--danger:hover:not([disabled]) { border-color: var(--fds-color-text); }
+.fds-btn--success:hover:not([disabled]) { background: var(--fds-color-positive-hover); border-color: var(--fds-color-positive-hover); }
+.fds-btn--success:active:not([disabled]) { background: var(--fds-color-positive-active); border-color: var(--fds-color-positive-active); }
+.fds-btn--warning:hover:not([disabled]) { background: var(--fds-color-warning-hover); border-color: var(--fds-color-warning-hover); }
+.fds-btn--warning:active:not([disabled]) { background: var(--fds-color-warning-active); border-color: var(--fds-color-warning-active); }
+.fds-btn--danger:hover:not([disabled]) { background: var(--fds-color-negative-hover); border-color: var(--fds-color-negative-hover); }
+.fds-btn--danger:active:not([disabled]) { background: var(--fds-color-negative-active); border-color: var(--fds-color-negative-active); }
 .fds-btn--ghost { background: transparent; color: var(--fds-color-text); border-color: transparent; }
 .fds-btn--ghost:hover:not([disabled]) { background: var(--fds-color-bg-subtle-hover); }
 
@@ -83,13 +89,13 @@
 .fds-field__required { color: var(--fds-color-negative); margin-left: 2px; }
 .fds-input {
   font-family: var(--fds-font-family);
-  font-size: var(--fds-font-size-sm);
+  font-size: 12px;
   color: var(--fds-color-text);
   background: var(--fds-color-bg-section);
   border: 1px solid var(--fds-color-border-strong);
   border-radius: var(--fds-radius-control);
   height: var(--fds-control-height);
-  padding: 0 var(--fds-space-md);
+  padding: 0 10px;
   transition: border-color var(--fds-motion-duration-fast) var(--fds-motion-ease-standard), box-shadow var(--fds-motion-duration-fast) var(--fds-motion-ease-standard);
   width: 100%;
   box-sizing: border-box;

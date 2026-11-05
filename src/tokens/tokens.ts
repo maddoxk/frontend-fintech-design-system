@@ -131,6 +131,12 @@ export interface SemanticColors {
   negativeBg: string;
   warning: string;
   warningBg: string;
+  positiveHover: string;
+  positiveActive: string;
+  negativeHover: string;
+  negativeActive: string;
+  warningHover: string;
+  warningActive: string;
   info: string;
   infoBg: string;
   focusRing: string;
@@ -159,6 +165,13 @@ export const lightColors: SemanticColors = {
   negativeBg: '#FCE8E8',
   warning: '#935610',
   warningBg: '#FBEBDC',
+  // Filled-intent hover/active fills: light darkens (white label), dark lightens (dark label); all labels >= 4.5:1.
+  positiveHover: '#095A38',
+  positiveActive: '#085032',
+  negativeHover: '#AB2A2A',
+  negativeActive: '#972525',
+  warningHover: '#814C0E',
+  warningActive: '#73430C',
   // Light info text uses the darker Blueprint blue so it is >= 4.5:1 on its tint (#137CBD is 4.2:1).
   info: palette.bpBlueHover,
   infoBg: '#DDEEF8',
@@ -186,6 +199,12 @@ export const darkColors: SemanticColors = {
   negativeBg: '#4A1B1B',
   warning: '#FFB366',
   warningBg: '#4A2E12',
+  positiveHover: '#54D29E',
+  positiveActive: '#68D7A9',
+  negativeHover: '#FF8484',
+  negativeActive: '#FF9292',
+  warningHover: '#FFBC78',
+  warningActive: '#FFC488',
   info: '#48AFF0',
   infoBg: '#10354F',
   focusRing: '#48AFF0',

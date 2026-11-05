@@ -18,6 +18,12 @@ const contrast = (a: string, b: string) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
+const mixBlack = (hex: string, p: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v * (1 - p)).toString(16).padStart(2, '0'));
+  return `#${ch.join('')}`;
+};
+
 const modes: ThemeName[] = ['dark', 'light'];
 const intents = ['positive', 'negative', 'warning', 'info'] as const;
 
@@ -47,6 +53,20 @@ describe('filled button contrast', () => {
     const c = themes[m];
     expect(contrast(c.brand, c.brandText)).toBeGreaterThanOrEqual(4.5);
     expect(contrast(c.brandHover, c.brandText)).toBeGreaterThanOrEqual(4.5);
+  });
+  it.each(modes)('%s intent labels hold >= 4.5:1 in rest, hover and active', (m) => {
+    const c = themes[m];
+    const fills = [
+      [c.brand, c.brandHover, mixBlack(c.brandHover, 0.15), c.brandText],
+      [c.positive, c.positiveHover, c.positiveActive, c.textInverse],
+      [c.warning, c.warningHover, c.warningActive, c.textInverse],
+      [c.negative, c.negativeHover, c.negativeActive, c.textInverse],
+    ];
+    fills.forEach(([rest, hover, active, label]) => {
+      [rest, hover, active].forEach((f) => expect(contrast(f, label)).toBeGreaterThanOrEqual(4.5));
+      expect(hover).not.toBe(rest);
+      expect(active).not.toBe(hover);
+    });
   });
   it.each(modes)('%s primary border (focus-ring colour) is >= 3:1 on page and widget surfaces', (m) => {
     const c = themes[m];
