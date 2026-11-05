@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -23,12 +24,10 @@ interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const DARK_QUERY = '(prefers-color-scheme: dark)';
+// useLayoutEffect avoids a flash after mount on the client; falls back to useEffect on the server.
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-function systemTheme(): ThemeName {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light';
-  return window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
-}
+const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 function isMode(v: unknown): v is ThemeMode {
   return v === 'light' || v === 'dark' || v === 'system';
@@ -66,22 +65,28 @@ export function ThemeProvider({
   storageKey,
   className,
 }: ThemeProviderProps) {
-  const [mode, setMode] = useState<ThemeMode>(() => readStored(storageKey) ?? defaultTheme);
-  const [system, setSystem] = useState<ThemeName>(systemTheme);
+  const [mode, setMode] = useState<ThemeMode>(defaultTheme);
+  const [system, setSystem] = useState<ThemeName>('light');
 
-  useEffect(() => {
+  // Resolve the stored mode after mount so the first render matches the server.
+  useIsoLayoutEffect(() => {
     setMode(readStored(storageKey) ?? defaultTheme);
   }, [defaultTheme, storageKey]);
 
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
     if (mode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return undefined;
     }
     const mql = window.matchMedia(DARK_QUERY);
     const onChange = (e: MediaQueryListEvent) => setSystem(e.matches ? 'dark' : 'light');
     setSystem(mql.matches ? 'dark' : 'light');
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    }
+    // Safari < 14
+    mql.addListener(onChange);
+    return () => mql.removeListener(onChange);
   }, [mode]);
 
   const theme: ThemeName = mode === 'system' ? system : mode;
