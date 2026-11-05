@@ -188,3 +188,38 @@ describe('ThemeProvider accent', () => {
     expect(window.localStorage.getItem('k:accent')).toBe('violet');
   });
 });
+
+describe('theme contrast', () => {
+  const modes: ThemeName[] = ['light', 'dark'];
+
+  it.each(modes)('%s text and muted text have >= 4.5:1 contrast on the page and widget surfaces', (m) => {
+    const t = themes[m];
+    for (const bg of [t.bg, t.bgElevated, t.bgSection]) {
+      expect(contrast(t.text, bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t.textMuted, bg)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(modes)('%s positive, negative and warning text colours have >= 4.5:1 on the page and panel surfaces', (m) => {
+    const t = themes[m];
+    for (const bg of [t.bg, t.bgElevated, t.bgSection]) {
+      expect(contrast(t.positive, bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t.negative, bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t.warning, bg)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(modes)('%s negative text has >= 4.5:1 on its tinted background', (m) => {
+    expect(contrast(themes[m].negative, themes[m].negativeBg)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('light white text on the negative (danger button) fill has >= 4.5:1', () => {
+    expect(contrast('#ffffff', themes.light.negative)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(modes)('%s default brand and focus ring have >= 3:1 contrast against the page', (m) => {
+    const t = themes[m];
+    expect(contrast(t.brand, t.bg)).toBeGreaterThanOrEqual(3);
+    expect(contrast(t.focusRing, t.bg)).toBeGreaterThanOrEqual(3);
+  });
+});

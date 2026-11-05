@@ -4,7 +4,7 @@ import { ThemeProvider } from '../src/theme/ThemeProvider';
 import '../src/styles.css';
 
 const withTheme: Decorator = (Story, context) => {
-  const theme = context.globals.theme === 'dark' ? 'dark' : 'light';
+  const theme = context.globals.theme === 'light' ? 'light' : 'dark';
   return (
     <ThemeProvider defaultTheme={theme}>
       <div style={{ padding: 24, minHeight: '100%' }}>
@@ -30,7 +30,7 @@ const preview: Preview = {
   globalTypes: {
     theme: {
       description: 'Light / dark theme',
-      defaultValue: 'light',
+      defaultValue: 'dark',
       toolbar: {
         title: 'Theme',
         icon: 'circlehollow',

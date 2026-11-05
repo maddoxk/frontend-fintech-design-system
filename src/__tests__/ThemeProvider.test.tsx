@@ -17,15 +17,15 @@ function ThemeReadout() {
 }
 
 describe('ThemeProvider', () => {
-  it('defaults to light and exposes CSS variables', () => {
+  it('defaults to dark and exposes CSS variables', () => {
     const { container } = render(
       <ThemeProvider>
         <ThemeReadout />
       </ThemeProvider>,
     );
-    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+    expect(screen.getByTestId('theme')).toHaveTextContent('dark');
     const wrapper = container.querySelector('[data-fds-theme]') as HTMLElement;
-    expect(wrapper).toHaveAttribute('data-fds-theme', 'light');
+    expect(wrapper).toHaveAttribute('data-fds-theme', 'dark');
     expect(wrapper.style.getPropertyValue('--fds-color-bg')).toBeTruthy();
   });
 
@@ -84,7 +84,7 @@ describe('ThemeProvider', () => {
     it('persists the mode when storageKey is set', async () => {
       mockMatchMedia(false);
       render(
-        <ThemeProvider storageKey="k">
+        <ThemeProvider storageKey="k" defaultTheme="light">
           <ThemeReadout />
         </ThemeProvider>,
       );
@@ -95,7 +95,7 @@ describe('ThemeProvider', () => {
     it('restores a stored mode and does not persist without storageKey', async () => {
       window.localStorage.setItem('k', 'dark');
       const { unmount } = render(
-        <ThemeProvider storageKey="k">
+        <ThemeProvider storageKey="k" defaultTheme="light">
           <ThemeReadout />
         </ThemeProvider>,
       );
@@ -103,7 +103,7 @@ describe('ThemeProvider', () => {
       unmount();
       window.localStorage.clear();
       render(
-        <ThemeProvider>
+        <ThemeProvider defaultTheme="light">
           <ThemeReadout />
         </ThemeProvider>,
       );
@@ -126,7 +126,7 @@ describe('ThemeProvider', () => {
         throw new Error('quota');
       });
       render(
-        <ThemeProvider storageKey="k">
+        <ThemeProvider storageKey="k" defaultTheme="light">
           <ThemeReadout />
         </ThemeProvider>,
       );
@@ -160,7 +160,7 @@ describe('ThemeProvider', () => {
       // jsdom defines window, so React warns about useLayoutEffect on the server; irrelevant here.
       const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const html = renderToString(
-        <ThemeProvider storageKey="k">
+        <ThemeProvider storageKey="k" defaultTheme="light">
           <ThemeReadout />
         </ThemeProvider>,
       );

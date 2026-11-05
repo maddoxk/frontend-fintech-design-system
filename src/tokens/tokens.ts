@@ -33,6 +33,26 @@ export const palette = {
   gray800: '#1e293b',
   gray900: '#0f172a',
   gray950: '#020617',
+  // Blueprint-style surfaces and intents (Palantir direction)
+  bpPage: '#182026',
+  bpSection: '#202B33',
+  bpWidget: '#293742',
+  bpWidgetHover: '#30404D',
+  bpBorder: '#30404D',
+  bpBorderStrong: '#394B59',
+  bpLightPage: '#F5F8FA',
+  bpLightPanel: '#EBF1F5',
+  bpLightBorder: '#D8E1E8',
+  bpLightBorderStrong: '#CED9E0',
+  bpText: '#182026',
+  bpTextDark: '#F5F8FA',
+  bpTextMutedDark: '#A7B6C2',
+  bpTextMuted: '#5C7080',
+  bpBlue: '#137CBD',
+  bpBlueHover: '#106BA3',
+  bpGreen: '#0F9960',
+  bpOrange: '#D9822B',
+  bpRed: '#DB3737',
 } as const;
 
 export const spacing = {
@@ -40,28 +60,48 @@ export const spacing = {
   sm: '8px',
   md: '12px',
   lg: '16px',
+  /** 20px step of the 4/8/12/16/20/24 scale. */
+  'lg-plus': '20px',
   xl: '24px',
   '2xl': '32px',
   '3xl': '48px',
 } as const;
 
 export const radii = {
-  sm: '4px',
-  md: '8px',
-  lg: '12px',
+  /** Controls (buttons, inputs). */
+  sm: '3px',
+  /** Widgets (bordered panels). */
+  md: '4px',
+  /** Sections. */
+  lg: '6px',
   full: '9999px',
+  control: '3px',
+  widget: '4px',
+  section: '6px',
+} as const;
+
+/** Layout sizes. */
+export const sizes = {
+  controlHeight: '32px',
+} as const;
+
+/** Elevation: borders first, shadows only for widgets and overlays. */
+export const shadows = {
+  widget: '0 2px 6px rgba(0, 0, 0, 0.18)',
+  overlay: '0 10px 24px rgba(0, 0, 0, 0.28)',
 } as const;
 
 export const typography = {
   fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-  fontFamilyMono:
-    "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
+    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+  fontFamilyMono: "'SF Mono', 'Roboto Mono', Menlo, Consolas, monospace",
   fontSizeXs: '12px',
   fontSizeSm: '14px',
   fontSizeMd: '16px',
   fontSizeLg: '18px',
   fontSizeXl: '24px',
+  /** Page title. */
+  fontSizeTitle: '32px',
   fontWeightRegular: 400,
   fontWeightMedium: 500,
   fontWeightSemibold: 600,
@@ -74,6 +114,8 @@ export type ThemeName = 'light' | 'dark';
 export interface SemanticColors {
   bg: string;
   bgElevated: string;
+  /** Section surface (between page and widget). */
+  bgSection: string;
   bgSubtleHover: string;
   border: string;
   borderStrong: string;
@@ -95,49 +137,57 @@ export interface SemanticColors {
 }
 
 export const lightColors: SemanticColors = {
-  bg: palette.white,
+  bg: palette.bpLightPage,
   bgElevated: palette.white,
-  bgSubtleHover: palette.gray100,
-  border: palette.gray200,
-  borderStrong: palette.gray300,
-  text: palette.gray900,
-  textMuted: palette.gray500,
+  bgSection: palette.bpLightPanel,
+  bgSubtleHover: palette.bpLightPanel,
+  border: palette.bpLightBorder,
+  borderStrong: palette.bpLightBorderStrong,
+  text: palette.bpText,
+  textMuted: palette.bpTextMuted,
   textInverse: palette.white,
-  brand: palette.brand500,
-  brandHover: palette.brand600,
+  brand: palette.bpBlue,
+  brandHover: palette.bpBlueHover,
   brandText: palette.white,
-  positive: palette.positive,
-  positiveBg: palette.positiveBg,
-  negative: palette.negative,
-  negativeBg: palette.negativeBg,
-  warning: palette.warning,
-  warningBg: palette.warningBg,
-  info: palette.info,
-  infoBg: palette.infoBg,
-  focusRing: palette.brand500,
+  // Contrast deviation #4: Blueprint intents #0F9960 / #DB3737 / #D9822B are only 2.9-4.3:1 as text on the
+  // light page (#F5F8FA) and panel (#EBF1F5). Intent colours are used as text (.fds-field__error,
+  // .fds-money--*, badges), so the light theme uses the darker Blueprint steps below (all >= 4.5:1 on page,
+  // panel, white and the tinted *Bg). Dark theme intents are already >= 4.5:1. #DB3737 remains in palette.
+  positive: '#0A6640',
+  positiveBg: '#E1F5EC',
+  negative: '#C23030',
+  negativeBg: '#FCE8E8',
+  warning: '#935610',
+  warningBg: '#FBEBDC',
+  info: palette.bpBlue,
+  infoBg: '#DDEEF8',
+  focusRing: palette.bpBlue,
 };
 
 export const darkColors: SemanticColors = {
-  bg: palette.gray950,
-  bgElevated: palette.gray900,
-  bgSubtleHover: palette.gray800,
-  border: palette.gray800,
-  borderStrong: palette.gray700,
-  text: palette.gray100,
-  textMuted: palette.gray400,
-  textInverse: palette.gray950,
-  brand: palette.brand500,
-  brandHover: palette.brand100,
+  bg: palette.bpPage,
+  bgElevated: palette.bpWidget,
+  bgSection: palette.bpSection,
+  bgSubtleHover: palette.bpWidgetHover,
+  border: palette.bpBorder,
+  borderStrong: palette.bpBorderStrong,
+  text: palette.bpTextDark,
+  // Spec secondary #5C7080 is < 4.5:1 on the dark page; use the lighter Blueprint gray for text.
+  textMuted: palette.bpTextMutedDark,
+  textInverse: palette.bpPage,
+  brand: palette.bpBlue,
+  // Filled-button hover keeps white on-accent text >= 4.5:1, so it is the darker blue in both themes.
+  brandHover: palette.bpBlueHover,
   brandText: palette.white,
-  positive: '#4ade80',
-  positiveBg: '#14532d',
-  negative: '#f87171',
-  negativeBg: '#7f1d1d',
-  warning: '#fbbf24',
-  warningBg: '#78350f',
-  info: '#22d3ee',
-  infoBg: '#164e63',
-  focusRing: '#60a5fa',
+  positive: '#3DCC91',
+  positiveBg: '#0F3D2B',
+  negative: '#FF7373',
+  negativeBg: '#4A1B1B',
+  warning: '#FFB366',
+  warningBg: '#4A2E12',
+  info: '#48AFF0',
+  infoBg: '#10354F',
+  focusRing: '#48AFF0',
 };
 
 export const themes: Record<ThemeName, SemanticColors> = {
@@ -199,11 +249,11 @@ export const accents: Record<AccentName, Record<ThemeName, AccentColors>> = {
   ),
   violet: accentPair(
     { brand: '#7c3aed', hover: '#6d28d9' },
-    { brand: '#7c3aed', hover: '#6d28d9', ring: '#a78bfa' },
+    { brand: '#8550f2', hover: '#7c3aed', ring: '#a78bfa' },
   ),
   rose: accentPair(
     { brand: '#be123c', hover: '#9f1239' },
-    { brand: '#be123c', hover: '#9f1239', ring: '#fb7185' },
+    { brand: '#cc2a56', hover: '#be123c', ring: '#fb7185' },
   ),
   graphite: accentPair(
     { brand: '#374151', hover: '#1f2937' },

@@ -8,6 +8,8 @@ import {
   spacing,
   radii,
   typography,
+  sizes,
+  shadows,
 } from '../tokens/tokens';
 
 const camelToKebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
@@ -21,7 +23,7 @@ export function colorVars(colors: SemanticColors): Record<string, string> {
   return vars;
 }
 
-/** Static (theme-independent) tokens: spacing, radii, typography. */
+/** Static (theme-independent) tokens: spacing, radii, sizes, shadows, typography. */
 export function staticVars(): Record<string, string> {
   const vars: Record<string, string> = {};
   Object.entries(spacing).forEach(([k, v]) => {
@@ -29,6 +31,12 @@ export function staticVars(): Record<string, string> {
   });
   Object.entries(radii).forEach(([k, v]) => {
     vars[`--fds-radius-${k}`] = v;
+  });
+  Object.entries(sizes).forEach(([k, v]) => {
+    vars[`--fds-${camelToKebab(k)}`] = v;
+  });
+  Object.entries(shadows).forEach(([k, v]) => {
+    vars[`--fds-shadow-${k}`] = v;
   });
   Object.entries(typography).forEach(([k, v]) => {
     vars[`--fds-${camelToKebab(k)}`] = String(v);
