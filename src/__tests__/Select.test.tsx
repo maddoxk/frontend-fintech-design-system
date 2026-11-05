@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select } from '../components/Select';
 import { themes, type ThemeName } from '../tokens/tokens';
@@ -157,5 +157,40 @@ describe('control border contrast (>= 3:1)', () => {
     [c.bg, c.bgSection, c.bgElevated].forEach((surface) => {
       expect(contrast(c.borderControl, surface)).toBeGreaterThanOrEqual(3);
     });
+  });
+  it.each(modes)('%s focus border and ring vs page, section and widget surfaces', (m) => {
+    const c = themes[m];
+    [c.bg, c.bgSection, c.bgElevated].forEach((surface) => {
+      expect(contrast(c.focusRing, surface)).toBeGreaterThanOrEqual(3);
+    });
+  });
+});
+
+describe('Select reset, multiple and refs', () => {
+  it('re-shows the placeholder after form.reset()', async () => {
+    render(
+      <form data-testid="f">
+        <Select label="C" placeholder="Choose" options={opts} />
+      </form>,
+    );
+    const sel = screen.getByLabelText('C');
+    const ph = screen.getByRole('option', { hidden: true, name: 'Choose' });
+    await userEvent.selectOptions(sel, 'eur');
+    expect(ph).toHaveAttribute('hidden');
+    (screen.getByTestId('f') as HTMLFormElement).reset();
+    await waitFor(() => expect(ph).not.toHaveAttribute('hidden'));
+  });
+  it('does not render the placeholder option when multiple', () => {
+    render(<Select label="C" multiple placeholder="Choose" options={opts} />);
+    expect(screen.getAllByRole('option')).toHaveLength(3);
+    expect(screen.queryByText('Choose')).toBeNull();
+  });
+  it('supports callback and object refs', () => {
+    const cb = vi.fn();
+    const obj = { current: null as HTMLSelectElement | null };
+    render(<Select label="A" ref={cb} options={opts} />);
+    render(<Select label="B" ref={obj} options={opts} />);
+    expect(cb).toHaveBeenCalledWith(screen.getByLabelText('A'));
+    expect(obj.current).toBe(screen.getByLabelText('B'));
   });
 });

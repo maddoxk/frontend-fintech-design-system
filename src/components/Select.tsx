@@ -1,4 +1,4 @@
-import { forwardRef, useId, useState, type ChangeEvent, type ReactNode, type SelectHTMLAttributes } from 'react';
+import { forwardRef, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ReactNode, type SelectHTMLAttributes } from 'react';
 import { cx } from '../utils/cx';
 
 export interface SelectOption {
@@ -19,7 +19,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   id?: string;
   /** Shorthand for `<option>` elements. Children are rendered after these. */
   options?: SelectOption[];
-  /** Leading empty, disabled option shown until a real choice is made, then hidden. */
+  /** Leading empty, disabled option shown until a real choice is made, then hidden. Ignored when `multiple` is set. */
   placeholder?: string;
 }
 
@@ -32,6 +32,16 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   ref,
 ) {
   const autoId = useId();
+  const innerRef = useRef<HTMLSelectElement | null>(null);
+  const setRefs = useCallback(
+    (node: HTMLSelectElement | null) => {
+      innerRef.current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+    },
+    [ref],
+  );
+  const showPlaceholder = placeholder !== undefined && !rest.multiple;
   const selectId = id ?? autoId;
   const hintId = `${selectId}-hint`;
   const errorId = `${selectId}-error`;
@@ -41,7 +51,23 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   const hasChoice = Array.isArray(current) ? current.length > 0 : current !== undefined && current !== null && String(current) !== '';
   const valueProps = controlled
     ? { value }
-    : { defaultValue: defaultValue ?? (placeholder !== undefined ? '' : undefined) };
+    : { defaultValue: defaultValue ?? (showPlaceholder ? '' : undefined) };
+  useEffect(() => {
+    const form = innerRef.current?.form;
+    if (!form || controlled) return;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const onReset = () => {
+      // Reset applies after the event finishes; re-sync from the DOM afterwards.
+      t = setTimeout(() => {
+        if (innerRef.current) setInner(innerRef.current.value);
+      }, 0);
+    };
+    form.addEventListener('reset', onReset);
+    return () => {
+      form.removeEventListener('reset', onReset);
+      if (t !== undefined) clearTimeout(t);
+    };
+  }, [controlled]);
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     if (!controlled) setInner(e.target.value);
     onChange?.(e);
@@ -60,7 +86,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       </label>
       <span className={cx('fds-select-wrap', disabled && 'fds-select-wrap--disabled')}>
         <select
-          ref={ref}
+          ref={setRefs}
           id={selectId}
           className={cx('fds-input', 'fds-select', error && 'fds-input--invalid', className)}
           aria-invalid={error ? true : undefined}
@@ -72,7 +98,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           {...valueProps}
           onChange={handleChange}
         >
-          {placeholder !== undefined && (
+          {showPlaceholder && (
             <option value="" disabled hidden={hasChoice}>
               {placeholder}
             </option>

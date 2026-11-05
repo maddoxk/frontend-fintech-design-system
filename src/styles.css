@@ -104,7 +104,7 @@
 .fds-input:hover:not(:disabled) { border-color: var(--fds-color-text-muted); }
 .fds-input:focus-visible {
   outline: none;
-  border-color: var(--fds-color-brand);
+  border-color: var(--fds-color-focus-ring);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--fds-color-focus-ring) 16%, transparent);
 }
 .fds-input--invalid { border-color: var(--fds-color-negative); }
