@@ -1,4 +1,4 @@
-import { Fragment, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { cx } from '../utils/cx';
 import { Button } from './Button';
 
@@ -9,6 +9,8 @@ export interface Step {
   content: ReactNode;
   /** Optional validator; return true (or a resolved true) to allow advancing. */
   validate?: () => boolean;
+  /** Force the error state on this step (also set automatically when validate fails). */
+  error?: boolean;
 }
 
 export interface StepperFormProps {
@@ -21,9 +23,12 @@ export interface StepperFormProps {
   submitLabel?: string;
 }
 
+const STATUS_TEXT = { error: 'Error', done: 'Complete', active: 'Current', todo: 'Not started' } as const;
+
 /**
- * Multi-step (KYC-style) form stepper. Renders a progress rail with proper
- * aria-current, and Back/Next navigation with optional per-step validation.
+ * Multi-step (KYC-style) form stepper. Renders a compact progress rail with
+ * aria-current, glyph + text states (never colour alone), and Back/Next
+ * navigation with optional per-step validation.
  */
 export function StepperForm({
   steps,
@@ -33,8 +38,10 @@ export function StepperForm({
   submitLabel = 'Submit',
 }: StepperFormProps) {
   const [internal, setInternal] = useState(0);
+  const [failedId, setFailedId] = useState<string | null>(null);
   const active = current ?? internal;
   const setActive = (i: number) => {
+    setFailedId(null);
     onStepChange?.(i);
     if (current === undefined) setInternal(i);
   };
@@ -43,7 +50,11 @@ export function StepperForm({
 
   const goNext = () => {
     const step = steps[active];
-    if (step.validate && !step.validate()) return;
+    if (step.validate && !step.validate()) {
+      setFailedId(step.id);
+      return;
+    }
+    setFailedId(null);
     if (isLast) {
       onComplete?.();
     } else {
@@ -59,23 +70,30 @@ export function StepperForm({
     <div className="fds-stepper">
       <ol className="fds-stepper__rail" aria-label="Progress">
         {steps.map((step, i) => {
-          const state = i < active ? 'done' : i === active ? 'active' : 'todo';
+          const hasError = step.error === true || failedId === step.id;
+          const state = hasError ? 'error' : i < active ? 'done' : i === active ? 'active' : 'todo';
+          const glyph = state === 'error' ? '!' : state === 'done' ? '✓' : i + 1;
+          const last = i === steps.length - 1;
           return (
-            <Fragment key={step.id}>
-              <li
-                className={cx('fds-step', state !== 'todo' && `fds-step--${state}`)}
-                aria-current={i === active ? 'step' : undefined}
-              >
-                <span className="fds-step__dot">{i < active ? '✓' : i + 1}</span>
-                <span className="fds-step__label">{step.label}</span>
-              </li>
-              {i < steps.length - 1 && (
+            <li
+              key={step.id}
+              className={cx('fds-step', state !== 'todo' && `fds-step--${state}`, !last && 'fds-step--has-bar')}
+              aria-current={i === active ? 'step' : undefined}
+            >
+              <span className="fds-step__dot" aria-hidden="true">
+                {glyph}
+              </span>
+              <span className="fds-step__label">{step.label}</span>
+              <span className={state === 'error' ? 'fds-step__status' : 'fds-sr-only'}>
+                ({STATUS_TEXT[state]})
+              </span>
+              {!last && (
                 <span
                   className={cx('fds-step__bar', i < active && 'fds-step__bar--done')}
                   aria-hidden="true"
                 />
               )}
-            </Fragment>
+            </li>
           );
         })}
       </ol>
@@ -83,6 +101,12 @@ export function StepperForm({
       <div role="group" aria-label={steps[active].label}>
         {steps[active].content}
       </div>
+
+      {failedId === steps[active].id && (
+        <p className="fds-stepper__error" role="alert">
+          Error: complete this step to continue.
+        </p>
+      )}
 
       <div className="fds-stepper__actions">
         <Button variant="ghost" onClick={goBack} disabled={active === 0}>

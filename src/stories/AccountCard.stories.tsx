@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AccountCard } from '../components/AccountCard';
 import { Sparkline } from '../components/Sparkline';
+import { ThemeProvider } from '../theme/ThemeProvider';
 
 const meta: Meta<typeof AccountCard> = {
   title: 'Components/AccountCard',
@@ -28,6 +29,27 @@ export const WithTrailingChart: Story = {
     status: { label: '+3.2% today', tone: 'positive' },
     trailing: <Sparkline data={[10, 12, 9, 14, 13, 18, 22, 21, 26]} width={120} height={36} />,
   },
+};
+
+/** Widget treatment in both themes. */
+export const DarkAndLight: Story = {
+  render: () => (
+    <div>
+      {(['dark', 'light'] as const).map((t) => (
+        <ThemeProvider key={t} defaultTheme={t}>
+          <div style={{ padding: 16, background: 'var(--fds-color-bg)' }}>
+            <AccountCard
+              name="Brokerage"
+              balance={152930.18}
+              accountNumber="•••• 0093"
+              status={{ label: 'Active', tone: 'positive' }}
+              trailing={<Sparkline data={[10, 12, 9, 14, 13, 18, 22, 21, 26]} width={120} height={36} intent="positive" />}
+            />
+          </div>
+        </ThemeProvider>
+      ))}
+    </div>
+  ),
 };
 
 export const Grid: Story = {

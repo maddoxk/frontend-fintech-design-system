@@ -2,6 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { StepperForm } from '../components/StepperForm';
 import { Field } from '../components/Field';
+import { ThemeProvider } from '../theme/ThemeProvider';
+
+const demoSteps = [
+  { id: 'a', label: 'Identity', content: <p>Identity details</p> },
+  { id: 'b', label: 'Address', content: <p>Address details</p>, error: true },
+  { id: 'c', label: 'Review', content: <p>Review</p> },
+];
 
 const meta: Meta<typeof StepperForm> = {
   title: 'Components/StepperForm',
@@ -11,6 +18,21 @@ const meta: Meta<typeof StepperForm> = {
 export default meta;
 
 type Story = StoryObj<typeof StepperForm>;
+
+/** Complete (check), current (underlined), error (!) and not-started states in both themes. */
+export const StatesDarkAndLight: Story = {
+  render: () => (
+    <div>
+      {(['dark', 'light'] as const).map((t) => (
+        <ThemeProvider key={t} defaultTheme={t}>
+          <div style={{ padding: 16, background: 'var(--fds-color-bg)', color: 'var(--fds-color-text)' }}>
+            <StepperForm steps={demoSteps} current={1} />
+          </div>
+        </ThemeProvider>
+      ))}
+    </div>
+  ),
+};
 
 export const KycOnboarding: Story = {
   render: () => {
