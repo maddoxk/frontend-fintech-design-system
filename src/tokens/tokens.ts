@@ -149,11 +149,15 @@ export const lightColors: SemanticColors = {
   brand: palette.bpBlue,
   brandHover: palette.bpBlueHover,
   brandText: palette.white,
-  positive: palette.bpGreen,
+  // Contrast deviation #4: Blueprint intents #0F9960 / #DB3737 / #D9822B are only 2.9-4.3:1 as text on the
+  // light page (#F5F8FA) and panel (#EBF1F5). Intent colours are used as text (.fds-field__error,
+  // .fds-money--*, badges), so the light theme uses the darker Blueprint steps below (all >= 4.5:1 on page,
+  // panel, white and the tinted *Bg). Dark theme intents are already >= 4.5:1. #DB3737 remains in palette.
+  positive: '#0A6640',
   positiveBg: '#E1F5EC',
-  negative: palette.bpRed,
+  negative: '#C23030',
   negativeBg: '#FCE8E8',
-  warning: palette.bpOrange,
+  warning: '#935610',
   warningBg: '#FBEBDC',
   info: palette.bpBlue,
   infoBg: '#DDEEF8',
