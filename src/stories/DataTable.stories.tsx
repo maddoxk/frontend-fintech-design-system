@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { ThemeProvider } from '../theme/ThemeProvider';
 import { DataTable, type Column } from '../components/DataTable';
 import { MoneyAmount } from '../components/MoneyAmount';
 import { StatusBadge } from '../components/StatusBadge';
@@ -76,4 +77,29 @@ export const Virtualized: Story = {
     height: 360,
     caption: '1,000 rows, windowed rendering — only visible rows are in the DOM',
   },
+};
+
+export const Selected: Story = {
+  args: {
+    columns,
+    data: rows,
+    rowKey: (r: Row) => r.id,
+    selectedKeys: ['2'],
+    onRowClick: () => undefined,
+    caption: 'Selected row and hover state',
+  },
+};
+
+export const DarkAndLight: Story = {
+  render: () => (
+    <div>
+      {(['dark', 'light'] as const).map((t) => (
+        <ThemeProvider key={t} defaultTheme={t}>
+          <div style={{ padding: 16, background: 'var(--fds-color-bg)' }}>
+            <DataTable columns={columns} data={rows} rowKey={(r) => r.id} selectedKeys={['2']} caption={`${t} theme`} />
+          </div>
+        </ThemeProvider>
+      ))}
+    </div>
+  ),
 };

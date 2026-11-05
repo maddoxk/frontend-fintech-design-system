@@ -117,9 +117,11 @@
 .fds-field__error { font-size: var(--fds-font-size-xs); font-weight: var(--fds-font-weight-semibold); color: var(--fds-color-negative); }
 
 /* MoneyAmount */
-.fds-money { font-variant-numeric: tabular-nums; font-family: var(--fds-font-family-mono); }
+.fds-money { font-variant-numeric: tabular-nums; font-family: var(--fds-font-family-mono); white-space: nowrap; }
 .fds-money--positive { color: var(--fds-color-positive); }
 .fds-money--negative { color: var(--fds-color-negative); }
+/* Direction glyph so gain/loss is never carried by colour alone. */
+.fds-money__icon { display: inline-block; margin-right: var(--fds-space-xs); font-size: 0.75em; line-height: 1; vertical-align: baseline; }
 
 /* StatusBadge: compact intent-tinted tag; the text label always carries the meaning. */
 .fds-badge {
@@ -153,42 +155,60 @@
 .fds-account-card__balance { font-size: var(--fds-font-size-xl); font-weight: var(--fds-font-weight-bold); font-variant-numeric: tabular-nums; }
 .fds-account-card__meta { display: flex; justify-content: space-between; font-size: var(--fds-font-size-xs); color: var(--fds-color-text-muted); }
 
-/* TransactionList */
-.fds-txn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+/* TransactionList: same density and divider language as DataTable. */
+.fds-txn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--fds-color-border); border-radius: var(--fds-radius-widget); background: var(--fds-color-bg); overflow: hidden; }
 .fds-txn {
   display: flex; align-items: center; gap: var(--fds-space-md);
-  padding: var(--fds-space-md) 0;
+  min-height: var(--fds-control-height); box-sizing: border-box;
+  padding: var(--fds-space-xs) var(--fds-space-md);
   border-bottom: 1px solid var(--fds-color-border);
+  font-size: var(--fds-font-size-sm);
 }
 .fds-txn:last-child { border-bottom: none; }
+.fds-txn:hover { background: var(--fds-color-bg-section); }
 .fds-txn__icon {
-  width: 36px; height: 36px; flex: none;
-  border-radius: var(--fds-radius-full);
+  width: var(--fds-space-xl); height: var(--fds-space-xl); flex: none;
+  border-radius: var(--fds-radius-control);
   display: grid; place-items: center;
-  background: var(--fds-color-bg-subtle-hover);
-  font-size: var(--fds-font-size-md);
+  background: var(--fds-color-bg-section);
+  font-size: var(--fds-font-size-xs);
 }
-.fds-txn__body { flex: 1; min-width: 0; }
+.fds-txn__body { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: var(--fds-space-md); }
 .fds-txn__merchant { font-size: var(--fds-font-size-sm); font-weight: var(--fds-font-weight-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fds-txn__sub { font-size: var(--fds-font-size-xs); color: var(--fds-color-text-muted); }
-.fds-txn__amount { font-variant-numeric: tabular-nums; font-weight: var(--fds-font-weight-medium); }
+.fds-txn__sub { font-size: var(--fds-font-size-xs); color: var(--fds-color-text-muted); white-space: nowrap; }
+.fds-txn__status { flex: none; }
+.fds-txn__amount { flex: none; min-width: 7em; text-align: right; font-size: var(--fds-font-size-sm); font-weight: var(--fds-font-weight-medium); }
 
-/* DataTable */
-.fds-table-wrap { border: 1px solid var(--fds-color-border); border-radius: var(--fds-radius-lg); overflow: hidden; }
-.fds-table { width: 100%; border-collapse: collapse; font-size: var(--fds-font-size-sm); }
+/* DataTable: compact, flat, sticky section-surface header. */
+.fds-table-wrap { border: 1px solid var(--fds-color-border); border-radius: var(--fds-radius-widget); overflow: hidden; background: var(--fds-color-bg); }
+.fds-table { width: 100%; border-collapse: collapse; font-size: var(--fds-font-size-sm); color: var(--fds-color-text); }
+.fds-table caption { text-align: left; padding: var(--fds-space-sm) var(--fds-space-md); font-size: var(--fds-font-size-xs); font-weight: var(--fds-font-weight-semibold); color: var(--fds-color-text-muted); background: var(--fds-color-bg-section); }
 .fds-table thead th {
-  text-align: left; padding: 10px 14px;
-  background: var(--fds-color-bg-subtle-hover);
+  text-align: left; height: var(--fds-control-height); box-sizing: border-box;
+  padding: 0 var(--fds-space-md);
+  background: var(--fds-color-bg-section);
+  border-bottom: 1px solid var(--fds-color-border-strong);
   color: var(--fds-color-text-muted);
+  font-size: var(--fds-font-size-xs);
   font-weight: var(--fds-font-weight-semibold);
-  position: sticky; top: 0;
+  white-space: nowrap;
+  position: sticky; top: 0; z-index: 1;
 }
 .fds-table th.fds-th--sortable { cursor: pointer; user-select: none; }
-.fds-table th.fds-th--numeric, .fds-table td.fds-td--numeric { text-align: right; font-variant-numeric: tabular-nums; }
-.fds-table tbody td { padding: 10px 14px; border-top: 1px solid var(--fds-color-border); }
-.fds-table tbody tr:hover { background: var(--fds-color-bg-subtle-hover); }
-.fds-th__sort { margin-left: 6px; opacity: 0.7; font-size: 0.85em; }
+.fds-table th.fds-th--sortable:hover { color: var(--fds-color-text); }
+.fds-table th.fds-th--sortable:focus-visible { outline: 2px solid var(--fds-color-focus-ring); outline-offset: -2px; }
+.fds-table th.fds-th--numeric, .fds-table td.fds-td--numeric { text-align: right; font-family: var(--fds-font-family-mono); font-variant-numeric: tabular-nums; }
+.fds-table tbody td { height: var(--fds-control-height); box-sizing: border-box; padding: 0 var(--fds-space-md); border-top: 1px solid var(--fds-color-border); }
+.fds-table tbody tr:first-child td { border-top: none; }
+.fds-table tbody tr:hover { background: var(--fds-color-bg-section); }
+.fds-table tbody tr[aria-selected="true"] { background: color-mix(in srgb, var(--fds-color-brand) 8%, var(--fds-color-bg)); box-shadow: inset 2px 0 0 var(--fds-color-brand); }
+.fds-table tbody tr[aria-selected="true"]:hover { background: color-mix(in srgb, var(--fds-color-brand) 10%, var(--fds-color-bg)); }
+.fds-table tbody tr.fds-tr--clickable { cursor: pointer; }
+.fds-th__sort { margin-left: var(--fds-space-xs); opacity: 0.8; font-size: 0.85em; }
 .fds-table__scroll { overflow: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  .fds-table tbody tr, .fds-txn { transition: background-color var(--fds-motion-duration-fast) var(--fds-motion-ease-standard); }
+}
 
 /* Sparkline / AreaChart */
 .fds-chart { display: block; width: 100%; height: auto; }

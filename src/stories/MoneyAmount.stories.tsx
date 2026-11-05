@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { ThemeProvider } from '../theme/ThemeProvider';
 import { MoneyAmount } from '../components/MoneyAmount';
 
 const meta: Meta<typeof MoneyAmount> = {
@@ -25,6 +26,22 @@ export const Currencies: Story = {
       <MoneyAmount value={1999.5} currency="GBP" locale="en-GB" />
       <MoneyAmount value={1999.5} currency="JPY" locale="ja-JP" />
       <MoneyAmount value={1999.5} currency="BRL" locale="pt-BR" />
+    </div>
+  ),
+};
+
+export const DarkAndLight: Story = {
+  render: () => (
+    <div>
+      {(['dark', 'light'] as const).map((t) => (
+        <ThemeProvider key={t} defaultTheme={t}>
+          <div style={{ padding: 16, display: 'grid', gap: 4, background: 'var(--fds-color-bg)', color: 'var(--fds-color-text)' }}>
+            <MoneyAmount value={482.19} colorize showSign />
+            <MoneyAmount value={-91.4} colorize showSign />
+            <MoneyAmount value={0} colorize />
+          </div>
+        </ThemeProvider>
+      ))}
     </div>
   ),
 };

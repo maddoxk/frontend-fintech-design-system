@@ -24,8 +24,12 @@ export interface DataTableProps<T> {
   virtualized?: boolean;
   /** Visible viewport height in px when virtualized. Default 360. */
   height?: number;
-  /** Row height in px when virtualized. Default 44. */
+  /** Row height in px when virtualized. Default 32 (matches the compact CSS row). */
   rowHeight?: number;
+  /** Keys (per `rowKey`) of rows to show in the selected state. */
+  selectedKeys?: string[];
+  /** Makes rows clickable; called with the clicked row. */
+  onRowClick?: (row: T) => void;
 }
 
 type SortDir = 'asc' | 'desc';
@@ -42,7 +46,9 @@ export function DataTable<T>({
   caption,
   virtualized = false,
   height = 360,
-  rowHeight = 44,
+  rowHeight = 32,
+  selectedKeys,
+  onRowClick,
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -144,7 +150,13 @@ export function DataTable<T>({
           </tr>
         )}
         {visibleRows.map((row) => (
-          <tr key={rowKey(row)} style={virtualized ? { height: rowHeight } : undefined}>
+          <tr
+            key={rowKey(row)}
+            style={virtualized ? { height: rowHeight } : undefined}
+            aria-selected={selectedKeys ? selectedKeys.includes(rowKey(row)) : undefined}
+            className={cx(onRowClick && 'fds-tr--clickable')}
+            onClick={onRowClick ? () => onRowClick(row) : undefined}
+          >
             {columns.map((col) => (
               <td key={col.key} className={cx(col.numeric && 'fds-td--numeric')}>
                 {col.render ? col.render(row) : (row[col.key as keyof T] as ReactNode)}
