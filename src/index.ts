@@ -4,7 +4,7 @@ import './styles.css';
 // Theme
 export { ThemeProvider, useTheme } from './theme/ThemeProvider';
 export type { ThemeProviderProps, ThemeMode } from './theme/ThemeProvider';
-export { themeVars, colorVars, staticVars } from './theme/cssVars';
+export { themeVars, colorVars, staticVars, resolveAccent } from './theme/cssVars';
 
 // Tokens
 export * from './tokens/tokens';

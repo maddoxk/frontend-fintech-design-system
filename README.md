@@ -101,6 +101,17 @@ export function App() {
 }
 ```
 
+## Customizing the accent
+
+```tsx
+<ThemeProvider accent="emerald">…</ThemeProvider> {/* blue | indigo | emerald | violet | rose | graphite */}
+<ThemeProvider accent={{ base: '#0f766e', hover: '#115e59', onAccent: '#fff' }}>…</ThemeProvider>
+```
+
+The accent overrides `--fds-color-brand`, `-brand-hover`, `-brand-text` and `-focus-ring` in light and dark mode,
+and nested providers can scope their own accent. `useTheme()` returns `accent` and `setAccent`; with `storageKey`
+set the choice persists under `${storageKey}:accent`. Unknown names fall back to `blue`.
+
 ## Architecture
 
 ```mermaid

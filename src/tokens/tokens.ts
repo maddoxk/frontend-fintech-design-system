@@ -144,3 +144,47 @@ export const themes: Record<ThemeName, SemanticColors> = {
   light: lightColors,
   dark: darkColors,
 };
+
+/** The semantic color roles an accent controls. */
+export type AccentColors = Pick<SemanticColors, 'brand' | 'brandHover' | 'brandText' | 'focusRing'>;
+
+export type AccentName = 'blue' | 'indigo' | 'emerald' | 'violet' | 'rose' | 'graphite';
+
+/** Custom accent: only `base` is required; the rest fall back to sensible values. */
+export interface CustomAccent {
+  base: string;
+  hover?: string;
+  /** Text/icon color drawn on top of the accent. Defaults to white. */
+  onAccent?: string;
+  focusRing?: string;
+}
+
+export type Accent = AccentName | CustomAccent;
+
+const accentPair = (brand: string, hover: string, ringDark: string): Record<ThemeName, AccentColors> => ({
+  light: { brand, brandHover: hover, brandText: '#ffffff', focusRing: brand },
+  dark: { brand, brandHover: hover, brandText: '#ffffff', focusRing: ringDark },
+});
+
+/** Accent presets. `blue` mirrors the default theme values exactly. */
+export const accents: Record<AccentName, Record<ThemeName, AccentColors>> = {
+  blue: {
+    light: {
+      brand: lightColors.brand,
+      brandHover: lightColors.brandHover,
+      brandText: lightColors.brandText,
+      focusRing: lightColors.focusRing,
+    },
+    dark: {
+      brand: darkColors.brand,
+      brandHover: darkColors.brandHover,
+      brandText: darkColors.brandText,
+      focusRing: darkColors.focusRing,
+    },
+  },
+  indigo: accentPair('#4f46e5', '#4338ca', '#818cf8'),
+  emerald: accentPair('#047857', '#065f46', '#34d399'),
+  violet: accentPair('#7c3aed', '#6d28d9', '#a78bfa'),
+  rose: accentPair('#be123c', '#9f1239', '#fb7185'),
+  graphite: accentPair('#374151', '#1f2937', '#9ca3af'),
+};

@@ -9,7 +9,7 @@ import {
   type ReactNode,
   type CSSProperties,
 } from 'react';
-import { type ThemeName } from '../tokens/tokens';
+import { type ThemeName, type Accent, accents } from '../tokens/tokens';
 import { themeVars } from './cssVars';
 
 /** Theme selection: an explicit theme, or "system" to follow the OS appearance. */
@@ -22,6 +22,9 @@ interface ThemeContextValue {
   mode: ThemeMode;
   setTheme: (t: ThemeMode) => void;
   toggleTheme: () => void;
+  /** Current accent (preset name or custom object). */
+  accent: Accent;
+  setAccent: (a: Accent) => void;
 }
 
 // useLayoutEffect avoids a flash after mount on the client; falls back to useEffect on the server.
@@ -43,6 +46,19 @@ function readStored(key: string | undefined): ThemeMode | undefined {
   }
 }
 
+function readStoredAccent(key: string | undefined): Accent | undefined {
+  if (!key) return undefined;
+  try {
+    const v = window.localStorage.getItem(`${key}:accent`);
+    if (!v) return undefined;
+    if (Object.prototype.hasOwnProperty.call(accents, v)) return v as Accent;
+    const parsed = JSON.parse(v);
+    return parsed && typeof parsed.base === 'string' ? (parsed as Accent) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export interface ThemeProviderProps {
@@ -51,6 +67,8 @@ export interface ThemeProviderProps {
   defaultTheme?: ThemeMode;
   /** localStorage key used to persist the chosen mode. Omit for no persistence. */
   storageKey?: string;
+  /** Accent preset name or custom colors. Defaults to "blue". Persisted under `${storageKey}:accent`. */
+  accent?: Accent;
   /** When true, applies vars to the wrapping div as inline CSS custom properties. */
   className?: string;
 }
@@ -63,15 +81,21 @@ export function ThemeProvider({
   children,
   defaultTheme = 'light',
   storageKey,
+  accent: accentProp = 'blue',
   className,
 }: ThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(defaultTheme);
+  const [accent, setAccentState] = useState<Accent>(accentProp);
   const [system, setSystem] = useState<ThemeName>('light');
 
   // Resolve the stored mode after mount so the first render matches the server.
   useIsoLayoutEffect(() => {
     setMode(readStored(storageKey) ?? defaultTheme);
   }, [defaultTheme, storageKey]);
+
+  useIsoLayoutEffect(() => {
+    setAccentState(readStoredAccent(storageKey) ?? accentProp);
+  }, [accentProp, storageKey]);
 
   useIsoLayoutEffect(() => {
     if (mode !== 'system' || typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -105,25 +129,41 @@ export function ThemeProvider({
     [storageKey],
   );
 
+  const setAccent = useCallback(
+    (a: Accent) => {
+      setAccentState(a);
+      if (storageKey) {
+        try {
+          window.localStorage.setItem(`${storageKey}:accent`, typeof a === 'string' ? a : JSON.stringify(a));
+        } catch {
+          /* storage unavailable */
+        }
+      }
+    },
+    [storageKey],
+  );
+
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
       mode,
       setTheme,
       toggleTheme: () => setTheme(theme === 'light' ? 'dark' : 'light'),
+      accent,
+      setAccent,
     }),
-    [theme, mode, setTheme],
+    [theme, mode, setTheme, accent, setAccent],
   );
 
   const style = useMemo(
     () =>
       ({
-        ...themeVars(theme),
+        ...themeVars(theme, accent),
         background: 'var(--fds-color-bg)',
         color: 'var(--fds-color-text)',
         fontFamily: 'var(--fds-font-family)',
       }) as CSSProperties,
-    [theme],
+    [theme, accent],
   );
 
   return (
