@@ -22,4 +22,4 @@ Rebase branch on latest `main`; if conflicts, one Sonnet attempt, else `cycle:ne
 - Pass agents only the issue text, its `Files:` list, or the PR diff. Never ask them to read the whole repo.
 
 ## Tooling note
-On this machine `gh issue edit` and `gh issue comment` fail with a Projects-classic GraphQL error. Change labels and post comments with `gh api` instead (e.g. `gh api -X POST repos/maddoxk/frontend-fintech-design-system/issues/<n>/labels -f 'labels[]=cycle:claimed'`, `gh api -X DELETE .../issues/<n>/labels/<name>`, `gh api -X POST .../issues/<n>/comments -f body=...`).
+On this machine `gh issue edit` and `gh issue comment` fail with a Projects-classic GraphQL error. Change labels and post comments with `gh api` instead (e.g. `echo '{"labels":["cycle:claimed"]}' | gh api -X POST repos/maddoxk/frontend-fintech-design-system/issues/<n>/labels --input -`, `gh api -X DELETE .../issues/<n>/labels/<name>`, `gh api -X POST .../issues/<n>/comments -f body=...`).
