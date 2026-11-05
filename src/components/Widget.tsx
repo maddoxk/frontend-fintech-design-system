@@ -3,6 +3,17 @@ import { cx } from '../utils/cx';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+/** Clamp to an integer heading level 1-6; non-numeric input falls back. */
+export function clampHeadingLevel(level: number, fallback: HeadingLevel): HeadingLevel {
+  if (!Number.isFinite(level)) return fallback;
+  return Math.min(6, Math.max(1, Math.round(level))) as HeadingLevel;
+}
+
+/** Positive integer or the fallback. */
+export function positiveInt(value: number | undefined, fallback: number | undefined): number | undefined {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 ? value : fallback;
+}
+
 export interface WidgetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Widget title (rendered as a heading). */
   title?: ReactNode;
@@ -26,9 +37,11 @@ export function Widget({
   ...rest
 }: WidgetProps) {
   const titleId = useId();
+  const level = clampHeadingLevel(headingLevel, 3);
+  const spanN = positiveInt(span, undefined);
   const hasHeader = title != null || actions != null;
   const merged: CSSProperties | undefined =
-    span && span > 1 ? { ...style, gridColumn: `span ${span}` } : style;
+    spanN && spanN > 1 ? { ...style, gridColumn: `span ${spanN}` } : style;
   return (
     <div
       className={cx('fds-widget', className)}
@@ -40,7 +53,7 @@ export function Widget({
       {hasHeader && (
         <div className="fds-widget__header">
           {title != null &&
-            createElement(`h${headingLevel}`, { id: titleId, className: 'fds-widget__title' }, title)}
+            createElement(`h${level}`, { id: titleId, className: 'fds-widget__title' }, title)}
           {actions != null && <div className="fds-widget__actions">{actions}</div>}
         </div>
       )}

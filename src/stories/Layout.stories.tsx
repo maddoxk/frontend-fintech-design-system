@@ -39,22 +39,19 @@ function Dashboard() {
   return (
     <Page title="Portfolio overview" as="main" actions={<Button variant="primary">New order</Button>}>
       <Section title="Accounts" columns={2} actions={<Button variant="ghost">Manage</Button>}>
-        <Widget title="Everyday Checking" actions={<StatusBadge tone="positive">Active</StatusBadge>}>
-          <AccountCard
-            name="Everyday Checking"
-            balance={8421.55}
-            accountNumber="•••• 4821"
-            status={{ label: 'Active', tone: 'positive' }}
-          />
-        </Widget>
-        <Widget title="Brokerage" actions={<StatusBadge tone="warning">Review</StatusBadge>}>
-          <AccountCard
-            name="Brokerage"
-            balance={152930.18}
-            accountNumber="•••• 0093"
-            status={{ label: 'Review', tone: 'warning' }}
-          />
-        </Widget>
+        {/* AccountCard is itself a bordered widget-style card with its own title: place it directly in the grid. */}
+        <AccountCard
+          name="Everyday Checking"
+          balance={8421.55}
+          accountNumber="•••• 4821"
+          status={{ label: 'Active', tone: 'positive' }}
+        />
+        <AccountCard
+          name="Brokerage"
+          balance={152930.18}
+          accountNumber="•••• 0093"
+          status={{ label: 'Review', tone: 'warning' }}
+        />
       </Section>
       <Section title="Holdings">
         <Widget title="Positions" headingLevel={3}>

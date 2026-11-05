@@ -1,6 +1,6 @@
 import { createElement, useId, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { cx } from '../utils/cx';
-import type { HeadingLevel } from './Widget';
+import { clampHeadingLevel, positiveInt, type HeadingLevel } from './Widget';
 
 export interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Section title; becomes the accessible name of the region. */
@@ -28,15 +28,18 @@ export function Section({
   ...rest
 }: SectionProps) {
   const titleId = useId();
+  const level = clampHeadingLevel(headingLevel, 2);
+  const cols = positiveInt(columns, 1) as number;
+  const spanN = Math.min(positiveInt(span, 1) as number, cols);
   const merged = {
     ...style,
-    '--fds-grid-columns': columns,
-    ...(span && span > 1 ? { gridColumn: `span ${span}` } : null),
+    '--fds-grid-columns': cols,
+    ...(spanN > 1 ? { gridColumn: `span ${spanN}` } : null),
   } as CSSProperties;
   return (
     <section className={cx('fds-section', className)} aria-labelledby={titleId} style={merged} {...rest}>
       <div className="fds-section__header">
-        {createElement(`h${headingLevel}`, { id: titleId, className: 'fds-section__title' }, title)}
+        {createElement(`h${level}`, { id: titleId, className: 'fds-section__title' }, title)}
         {actions != null && <div className="fds-section__actions">{actions}</div>}
       </div>
       <div className="fds-section__body">{children}</div>
