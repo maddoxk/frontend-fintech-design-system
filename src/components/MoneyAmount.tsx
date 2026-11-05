@@ -9,7 +9,7 @@ export interface MoneyAmountProps extends Omit<HTMLAttributes<HTMLSpanElement>, 
   currency?: string;
   /** BCP 47 locale. Defaults to the runtime locale. */
   locale?: string;
-  /** Color positive green and negative red. */
+  /** Color gains/losses with the success/danger tokens and prefix a direction glyph (state is never colour-only). */
   colorize?: boolean;
   /** Always render an explicit sign. */
   showSign?: boolean;
@@ -40,6 +40,11 @@ export function MoneyAmount({
       aria-label={formatted}
       {...rest}
     >
+      {colorize && tone && (
+        <span className="fds-money__icon" aria-hidden="true">
+          {tone === 'positive' ? '▲' : '▼'}
+        </span>
+      )}
       {formatted}
     </span>
   );

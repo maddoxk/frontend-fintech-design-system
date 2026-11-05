@@ -1,6 +1,7 @@
 import { type HTMLAttributes } from 'react';
 import { cx } from '../utils/cx';
 import { MoneyAmount } from './MoneyAmount';
+import { StatusBadge, type BadgeTone } from './StatusBadge';
 import { formatDate } from '../utils/format';
 
 export interface Transaction {
@@ -13,6 +14,10 @@ export interface Transaction {
   category?: string;
   /** Emoji or short glyph for the icon bubble. */
   icon?: string;
+  /** Status text shown in a StatusBadge (the label always carries the meaning). */
+  status?: string;
+  /** Badge tone for `status`. Defaults to neutral. */
+  statusTone?: BadgeTone;
 }
 
 export interface TransactionListProps extends HTMLAttributes<HTMLUListElement> {
@@ -43,6 +48,11 @@ export function TransactionList({
               {t.category ? ` · ${t.category}` : ''}
             </div>
           </div>
+          {t.status && (
+            <StatusBadge className="fds-txn__status" tone={t.statusTone ?? 'neutral'}>
+              {t.status}
+            </StatusBadge>
+          )}
           <MoneyAmount
             className="fds-txn__amount"
             value={t.amount}
