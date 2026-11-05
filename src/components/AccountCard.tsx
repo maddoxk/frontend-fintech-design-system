@@ -18,7 +18,7 @@ export interface AccountCardProps extends HTMLAttributes<HTMLDivElement> {
   trailing?: ReactNode;
 }
 
-/** Summary card for a single financial account. */
+/** Palantir-style widget summarising a single financial account. */
 export function AccountCard({
   name,
   balance,
@@ -41,14 +41,22 @@ export function AccountCard({
         <span className="fds-account-card__name">{name}</span>
         {status && <StatusBadge tone={status.tone}>{status.label}</StatusBadge>}
       </div>
-      <MoneyAmount
-        className="fds-account-card__balance"
-        value={balance}
-        currency={currency}
-        locale={locale}
-      />
+      <div className="fds-account-card__field">
+        <span className="fds-account-card__label">Balance</span>
+        <MoneyAmount
+          className="fds-account-card__balance"
+          value={balance}
+          currency={currency}
+          locale={locale}
+        />
+      </div>
       <div className="fds-account-card__meta">
-        <span>{accountNumber}</span>
+        {accountNumber && (
+          <div className="fds-account-card__field">
+            <span className="fds-account-card__label">Account</span>
+            <span className="fds-account-card__id">{accountNumber}</span>
+          </div>
+        )}
         {trailing}
       </div>
     </div>
