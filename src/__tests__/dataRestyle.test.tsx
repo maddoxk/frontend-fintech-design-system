@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { DataTable, type Column } from '../components/DataTable';
 import { MoneyAmount } from '../components/MoneyAmount';
 import { TransactionList } from '../components/TransactionList';
@@ -111,6 +112,27 @@ describe('DataTable restyle', () => {
     expect(trs[1]).toHaveAttribute('aria-selected', 'true');
     trs[0].click();
     expect(clicked).toBe('1');
+  });
+  it('clickable rows are keyboard focusable and activate with Enter and Space', async () => {
+    const clicked: string[] = [];
+    render(<DataTable columns={cols} data={rows} rowKey={(r) => r.id} onRowClick={(r) => clicked.push(r.id)} />);
+    const trs = screen.getAllByRole('row').slice(1);
+    expect(trs[0]).toHaveAttribute('tabindex', '0');
+    await userEvent.tab();
+    await userEvent.tab();
+    await userEvent.tab();
+    expect(trs[0]).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard(' ');
+    expect(clicked).toEqual(['1', '1']);
+    await userEvent.tab();
+    expect(trs[1]).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    expect(clicked).toEqual(['1', '1', '2']);
+  });
+  it('rows without onRowClick are not focusable', () => {
+    render(<DataTable columns={cols} data={rows} rowKey={(r) => r.id} />);
+    for (const tr of screen.getAllByRole('row').slice(1)) expect(tr).not.toHaveAttribute('tabindex');
   });
   it('defaults virtualized row height to the compact 32px', () => {
     const many = Array.from({ length: 100 }, (_, i) => ({ id: String(i), name: 'n', amount: i }));

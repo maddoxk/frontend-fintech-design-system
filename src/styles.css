@@ -204,6 +204,7 @@
 .fds-table tbody tr[aria-selected="true"] { background: color-mix(in srgb, var(--fds-color-brand) 8%, var(--fds-color-bg)); box-shadow: inset 2px 0 0 var(--fds-color-brand); }
 .fds-table tbody tr[aria-selected="true"]:hover { background: color-mix(in srgb, var(--fds-color-brand) 10%, var(--fds-color-bg)); }
 .fds-table tbody tr.fds-tr--clickable { cursor: pointer; }
+.fds-table tbody tr.fds-tr--clickable:focus-visible { outline: 2px solid var(--fds-color-focus-ring); outline-offset: -2px; }
 .fds-th__sort { margin-left: var(--fds-space-xs); opacity: 0.8; font-size: 0.85em; }
 .fds-table__scroll { overflow: auto; }
 @media (prefers-reduced-motion: no-preference) {

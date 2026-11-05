@@ -156,6 +156,18 @@ export function DataTable<T>({
             aria-selected={selectedKeys ? selectedKeys.includes(rowKey(row)) : undefined}
             className={cx(onRowClick && 'fds-tr--clickable')}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
+            tabIndex={onRowClick ? 0 : undefined}
+            onKeyDown={
+              onRowClick
+                ? (e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onRowClick(row);
+                    }
+                  }
+                : undefined
+            }
           >
             {columns.map((col) => (
               <td key={col.key} className={cx(col.numeric && 'fds-td--numeric')}>
