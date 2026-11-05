@@ -150,7 +150,7 @@ describe('ThemeProvider accent', () => {
       return (
         <>
           <button onClick={() => setN(n + 1)}>rerender</button>
-          <ThemeProvider storageKey="k" accent={{ base: '#112233' }}>
+          <ThemeProvider accent={{ base: '#112233' }}>
             <Readout />
           </ThemeProvider>
         </>
@@ -161,5 +161,30 @@ describe('ThemeProvider accent', () => {
     await userEvent.click(screen.getByText('violet'));
     await userEvent.click(screen.getByText('rerender'));
     expect(screen.getByTestId('accent')).toHaveTextContent('violet');
+  });
+
+  it('ignores invalid setAccent input and keeps the current accent', async () => {
+    function Bad() {
+      const { setAccent } = useTheme();
+      return (
+        <>
+          <button onClick={() => setAccent('nope' as never)}>bad-name</button>
+          <button onClick={() => setAccent({ base: 'url(x)' } as never)}>bad-custom</button>
+          <button onClick={() => setAccent(null as never)}>bad-null</button>
+        </>
+      );
+    }
+    render(
+      <ThemeProvider storageKey="k">
+        <Readout />
+        <Bad />
+      </ThemeProvider>,
+    );
+    await userEvent.click(screen.getByText('violet'));
+    for (const label of ['bad-name', 'bad-custom', 'bad-null']) {
+      await userEvent.click(screen.getByText(label));
+      expect(screen.getByTestId('accent')).toHaveTextContent('violet');
+    }
+    expect(window.localStorage.getItem('k:accent')).toBe('violet');
   });
 });

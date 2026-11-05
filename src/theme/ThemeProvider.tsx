@@ -138,6 +138,8 @@ export function ThemeProvider({
 
   const setAccent = useCallback(
     (a: Accent) => {
+      // Invalid input is ignored: the current accent is kept, so useTheme().accent is always valid.
+      if (!isValidAccent(a)) return;
       setAccentState(a);
       if (storageKey) {
         try {
