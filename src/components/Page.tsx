@@ -1,6 +1,6 @@
 import { createElement, useId, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react';
 import { cx } from '../utils/cx';
-import type { HeadingLevel } from './Widget';
+import { clampHeadingLevel, positiveInt, type HeadingLevel } from './Widget';
 
 export interface PageProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   /** Page title (32/700). */
@@ -28,16 +28,18 @@ export function Page({
   ...rest
 }: PageProps) {
   const titleId = useId();
+  const level = clampHeadingLevel(headingLevel, 1);
+  const cols = positiveInt(columns, 1) as number;
   return createElement(
     as,
     {
       className: cx('fds-page', className),
-      'aria-labelledby': titleId,
-      style: { ...style, '--fds-grid-columns': columns } as CSSProperties,
+      ...(as === 'main' ? { 'aria-labelledby': titleId } : { role: 'region', 'aria-labelledby': titleId }),
+      style: { ...style, '--fds-grid-columns': cols } as CSSProperties,
       ...rest,
     },
     <div className="fds-page__header" key="h">
-      {createElement(`h${headingLevel}`, { id: titleId, className: 'fds-page__title' }, title)}
+      {createElement(`h${level}`, { id: titleId, className: 'fds-page__title' }, title)}
       {actions != null && <div className="fds-page__actions">{actions}</div>}
     </div>,
     <div className="fds-page__grid" key="g">

@@ -147,3 +147,18 @@ describe('Sparkline', () => {
     }
   });
 });
+
+describe('Sparkline non-finite data', () => {
+  it('filters NaN/Infinity before drawing and labelling', () => {
+    const { container } = render(<Sparkline data={[1, NaN, 3, Infinity, 5]} />);
+    expect(container.innerHTML).not.toContain('NaN');
+    expect(container.innerHTML).not.toContain('Infinity');
+    expect(screen.getByRole('img')).toHaveAccessibleName('Trend rising, from 1 to 5 over 3 points');
+  });
+  it('renders the empty state when nothing finite remains', () => {
+    const { container } = render(<Sparkline data={[NaN, Infinity]} />);
+    expect(container.querySelector('path')).toBeNull();
+    expect(container.innerHTML).not.toContain('NaN');
+    expect(screen.getByRole('img')).toHaveAccessibleName('Sparkline');
+  });
+});

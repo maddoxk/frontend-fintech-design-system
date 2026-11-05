@@ -137,9 +137,50 @@ describe('layout styles', () => {
       expect(contrast(c.text, bg)).toBeGreaterThanOrEqual(4.5);
     }
   });
-  it.each(modes)('%s panel borders against their parent surface >= 1.0 and distinct', (m) => {
+  // The spec's border colours (e.g. #30404D on #202B33) are decorative container borders and
+  // fall below the 3:1 UI-contrast threshold by design; this only checks they differ from the surfaces.
+  it.each(modes)('%s border colour differs from the section and widget surfaces', (m) => {
     const c = themes[m];
     expect(c.border).not.toBe(c.bgSection);
     expect(c.border).not.toBe(c.bgElevated);
+  });
+});
+
+describe('runtime hardening', () => {
+  it('clamps headingLevel to 1-6', () => {
+    const { container } = render(
+      <>
+        <Widget title="A" headingLevel={9 as never} />
+        <Widget title="B" headingLevel={0 as never} />
+        <Section title="C" headingLevel={7 as never} />
+      </>,
+    );
+    expect(container.querySelector('h6.fds-widget__title')).toBeTruthy();
+    expect(container.querySelector('h1.fds-widget__title')).toBeTruthy();
+    expect(container.querySelector('h6.fds-section__title')).toBeTruthy();
+  });
+  it('falls back for invalid columns and span, and span cannot exceed columns', () => {
+    const { container } = render(
+      <>
+        <Section title="A" columns={0} data-testid="a" />
+        <Section title="B" columns={2.5} data-testid="b" />
+        <Section title="C" columns={2} span={5} data-testid="c" />
+        <Widget title="W" span={-1} data-testid="w" />
+        <Page title="P" columns={-3} data-testid="p" />
+      </>,
+    );
+    const get = (id: string) => container.querySelector(`[data-testid="${id}"]`) as HTMLElement;
+    expect(get('a').style.getPropertyValue('--fds-grid-columns')).toBe('1');
+    expect(get('b').style.getPropertyValue('--fds-grid-columns')).toBe('1');
+    expect(get('c').style.gridColumn).toBe('span 2');
+    expect(get('w').style.gridColumn).toBe('');
+    expect(get('p').style.getPropertyValue('--fds-grid-columns')).toBe('1');
+  });
+  it('Page as div is a labelled region; as main keeps the landmark', () => {
+    render(<Page title="Plain" data-testid="d" />);
+    const d = screen.getByTestId('d');
+    expect(d.tagName).toBe('DIV');
+    expect(d).toHaveAttribute('role', 'region');
+    expect(d).toHaveAttribute('aria-labelledby');
   });
 });

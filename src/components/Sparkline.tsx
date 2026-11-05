@@ -24,7 +24,7 @@ export interface SparklineProps {
  * trend direction in words.
  */
 export function Sparkline({
-  data,
+  data: rawData,
   width = 160,
   height = 48,
   area = false,
@@ -33,6 +33,7 @@ export function Sparkline({
   intent = 'primary',
   ariaLabel,
 }: SparklineProps) {
+  const data = useMemo(() => rawData.filter((v) => Number.isFinite(v)), [rawData]);
   const { linePath, areaPath, lastPoint } = useMemo(() => {
     if (data.length === 0) {
       return { linePath: '', areaPath: '', lastPoint: null as null | { x: number; y: number } };
