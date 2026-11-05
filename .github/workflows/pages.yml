@@ -72,9 +72,15 @@ jobs:
             echo "Push rejected; fetching, rebasing and retrying once."
             git fetch origin main
             git rebase origin/main
+            # Re-test the rebased commit (deps may have changed) before it is
+            # pushed, tagged and deployed.
+            npm ci --legacy-peer-deps
+            npm test
             git push origin main
           fi
           # Tag after the push so the tag points at the commit that landed on main.
+          # If the tag push fails after main was pushed, recover manually:
+          # git tag v<version> <release-commit-sha> && git push origin v<version>
           git tag "v${VERSION}"
           git push origin "v${VERSION}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
