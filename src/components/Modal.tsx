@@ -94,7 +94,6 @@ export function Modal({
         if (closeOnOverlay && e.target === e.currentTarget) onClose();
       }}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
       <div
         ref={dialogRef}
         className="fds-modal"
